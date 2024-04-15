@@ -7,12 +7,8 @@ from sklearn.ensemble import RandomForestRegressor
 
 from .features.create_features import create_features
 from .utils import calc_regression_metrics, naive_baseline
+from gen_chem_1D.data.data_classes import RF_HYPERPARAMETERS
 
-RF_HYPERPARAMETERS = {
-    'n_estimators': 100,
-    'max_depth': 20,
-    'random_state': 42
-}
 
 def train_rf(df,
              regression_targets,
