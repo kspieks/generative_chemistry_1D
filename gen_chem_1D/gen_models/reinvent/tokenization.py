@@ -38,7 +38,7 @@ class Vocabulary(object):
                  max_length=140,
                  ):
         self.special_tokens = ['EOS', 'GO']
-        self.additional_chars = set()
+        self.additional_chars = list()
         self.chars = self.special_tokens
         self.vocab_size = len(self.chars)
         self.vocab = dict(zip(self.chars, range(len(self.chars))))
@@ -72,9 +72,8 @@ class Vocabulary(object):
     def add_characters(self, chars):
         """Adds characters to the vocabulary"""
         for char in chars:
-            self.additional_chars.add(char)
+            self.additional_chars.append(char)
         char_list = list(self.additional_chars)
-        char_list.sort()
         self.chars = char_list + self.special_tokens
         self.vocab_size = len(self.chars)
         self.vocab = dict(zip(self.chars, range(len(self.chars))))
