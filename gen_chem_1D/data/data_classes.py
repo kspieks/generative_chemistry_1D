@@ -80,3 +80,31 @@ class PredictiveModel:
         # assign default hyperparameters based on model type
         if not self.hyperparameters:
             self.hyperparameters = SUPPORTED_PRED_MODELS[self.model]
+
+@dataclass
+class GenerativePrior:
+    """
+    Class to store arguments for training a generative prior.
+    
+    Args:
+        vocab_file: text file containing tokens that define the vocabulary.
+        smi_path: path to a file containing cleaned SMILES.
+        checkpoint_path: optional path to a pre-trained generative model.
+        num_epochs: number of training epochs.
+        batch_size: number of sequences to sample at each iteration.
+        init_lr: initial learning rate.
+        embedding_size: dimension of the embedding.
+        hidden_size: dimension of the hidden layers.
+        dropout_input: dropout applied to the embeddings before input to RNN.
+        dropout_hidden: dropout applied between hidden layers of RNN.
+    """
+    vocab_file: str
+    smi_path: str
+    checkpoint_path: str
+    num_epochs: int = 20
+    batch_size: int = 128
+    init_lr: float = 1e-3
+    embedding_size: int = 128
+    hidden_size: int = 512
+    dropout_input: float = 0
+    dropout_hidden: float = 0
