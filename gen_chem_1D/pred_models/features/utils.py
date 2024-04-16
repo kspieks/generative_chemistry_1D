@@ -35,6 +35,6 @@ def rdkit_to_np(vect, num_bits) -> np.array:
     `GetCountFingerprintAsNumPy` return numpy arrays of dtype uint32, which leads
     to overflow errors if these vectors are added or subtracted.
     """
-    arr = np.zeros((num_bits,), dtype=np.float64)
+    arr = np.zeros((num_bits,), dtype=np.float32)
     DataStructs.ConvertToNumpyArray(vect, arr)  # overwrites arr
     return arr
