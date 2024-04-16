@@ -268,8 +268,8 @@ class ScaffoldConstrainedRNN():
             
             # sample according to conditional probability distribution of the RNN
             logits, h = self.rnn(x, h)
-            prob = F.softmax(logits)
-            log_prob = F.log_softmax(logits)
+            prob = F.softmax(logits, dim=1)
+            log_prob = F.log_softmax(logits, dim=1)
             x = torch.multinomial(prob, num_samples=1).view(-1)
             
             # If not opened, replace with current pattern token, else keep the sample
