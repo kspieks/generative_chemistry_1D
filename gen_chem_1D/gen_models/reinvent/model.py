@@ -14,14 +14,22 @@ class MultiGRU(nn.Module):
     Implements a three layer GRU cell including an embedding layer
     and an output linear layer back to the size of the vocabulary.
     """
-    def __init__(self, voc_size, dropout_input=0.0, dropout_hidden=0.0):
+    def __init__(self,
+                 vocab_size,
+                 embedding_size=128,
+                 hidden_size=512,
+                 dropout_input=0.0,
+                 dropout_hidden=0.0,
+                 ):
         super(MultiGRU, self).__init__()
-        # TODO: allow embedding size and hidden size to be arguments
-        self.embedding = nn.Embedding(voc_size, 128)
-        self.gru_1 = nn.GRUCell(128, 512)
-        self.gru_2 = nn.GRUCell(512, 512)
-        self.gru_3 = nn.GRUCell(512, 512)
-        self.linear = nn.Linear(512, voc_size)
+        self.embedding_size = embedding_size
+        self.hidden_size = hidden_size
+
+        self.embedding = nn.Embedding(vocab_size, self.embedding_size)
+        self.gru_1 = nn.GRUCell(self.embedding_size, self.hidden_size)
+        self.gru_2 = nn.GRUCell(self.hidden_size, self.hidden_size)
+        self.gru_3 = nn.GRUCell(self.hidden_size, self.hidden_size)
+        self.linear = nn.Linear(self.hidden_size, vocab_size)
 
         self.dropout_input = nn.Dropout(dropout_input)
         self.dropout_hidden = nn.Dropout(dropout_hidden)
@@ -41,7 +49,7 @@ class MultiGRU(nn.Module):
 
     def init_h(self, batch_size):
         # initial cell state is zero
-        return Variable(torch.zeros(3, batch_size, 512))
+        return Variable(torch.zeros(3, batch_size, self.hidden_size))
 
 
 class RNN():
@@ -50,8 +58,19 @@ class RNN():
     to determine size of the vocabulary and index of the END token.
     Code comes from: https://github.com/MarcusOlivecrona/REINVENT
     """
-    def __init__(self, voc, dropout_input=0.0, dropout_hidden=0.0):
-        self.rnn = MultiGRU(voc.vocab_size, dropout_input, dropout_hidden)
+    def __init__(self,
+                 voc,
+                 embedding_size=128,
+                 hidden_size=512,
+                 dropout_input=0.0,
+                 dropout_hidden=0.0,
+                 ):
+        self.rnn = MultiGRU(vocab_size=voc.vocab_size,
+                            embedding_size=embedding_size,
+                            hidden_size=hidden_size,
+                            dropout_input=dropout_input,
+                            dropout_hidden=dropout_hidden,
+                            )
         if torch.cuda.is_available():
             self.rnn.cuda()
         self.voc = voc
@@ -133,8 +152,19 @@ class ScaffoldConstrainedRNN():
     Implements the scaffold constrained RNN sampler.
     Code comes from: https://github.com/maxime-langevin/scaffold-constrained-generation
     """
-    def __init__(self, voc):
-        self.rnn = MultiGRU(voc.vocab_size)
+    def __init__(self,
+                 voc,
+                 embedding_size=128,
+                 hidden_size=512,
+                 dropout_input=0.0,
+                 dropout_hidden=0.0,
+                 ):
+        self.rnn = MultiGRU(vocab_size=voc.vocab_size,
+                            embedding_size=embedding_size,
+                            hidden_size=hidden_size,
+                            dropout_input=dropout_input,
+                            dropout_hidden=dropout_hidden,
+                            )
         if torch.cuda.is_available():
             self.rnn.cuda()
         self.voc = voc
