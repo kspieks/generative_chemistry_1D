@@ -71,6 +71,10 @@ def clean_smiles(df,
     print('Cleaning dataset...')
     print(f'Dataframe has {len(df)} rows')
 
+    # make sure appropriate columns are present
+    if 'SMILES' not in df.columns:
+        raise ValueError("Column containing SMILES strings must be labeled as 'SMILES'.")
+
     # remove any rows that are missing a SMILES string
     num_nan = len(df[df.SMILES.isna()])
     print(f"Removing {num_nan} rows that are missing a SMILES string")
