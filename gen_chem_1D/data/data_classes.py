@@ -104,6 +104,41 @@ class GenerativePrior:
     num_epochs: int = 20
     batch_size: int = 128
     init_lr: float = 1e-3
+    
+    embedding_size: int = 128
+    hidden_size: int = 512
+    dropout_input: float = 0
+    dropout_hidden: float = 0
+
+@dataclass
+class GenerativeSample:
+    """
+    Class to store arguments for sampling a generative model.
+
+    Args:
+        checkpoint_path: path to a trained generative model.
+        vocab_file: text file containing tokens that define the vocabulary.
+        num_smiles: number of SMILES to generate.
+        max_len: maximum sequence length that will be generated.
+        output_file: csv filepath to write results to.
+        batch_size: number of sequences to sample at each iteration.
+        scaffold_constraint: optional SMILES containing * for controlled generation e.g., CC(*)CC.
+        embedding_size: dimension of the embedding.
+        hidden_size: dimension of the hidden layers.
+        dropout_input: dropout applied to the embeddings before input to RNN.
+        dropout_hidden: dropout applied between hidden layers of RNN.
+    """
+    checkpoint_path: str
+    vocab_file: str
+    num_smiles: int
+    max_len: int
+    output_file: str
+
+    pred_models: Dict
+    calculators: List[str] = field(default_factory=lambda: ['mw'])
+    
+    batch_size: int = 128
+    scaffold_constraint: str = ''
     embedding_size: int = 128
     hidden_size: int = 512
     dropout_input: float = 0
