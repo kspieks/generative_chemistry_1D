@@ -110,7 +110,7 @@ class RNN():
 
         Args:
             batch_size: Number of sequences to sample.
-            max_length: Maximum length of the sequences.
+            max_length: Maximum length of the generated sequences.
 
         Returns:
             seqs: (batch_size, seq_length) The sampled sequences.
@@ -175,7 +175,7 @@ class ScaffoldConstrainedRNN():
 
         Args:
             target: (batch_size * sequence_lenght) A batch of sequences.
-            max_length: Maximum length of the sequences.
+            max_length: Maximum length of the generated sequences.
 
         Returns:
             log_probs: (batch_size) Log likelihood for each example
