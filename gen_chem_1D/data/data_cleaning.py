@@ -40,6 +40,22 @@ def remove_stereochemistry(smi, canonicalize=True):
     return Chem.MolToSmiles(mol, canonical=canonicalize)
 
 
+def remove_multiple_compounds(smi):
+    """
+    If a SMILES string contains multiple molecules,
+    only keep the largest molecule (i.e., longest SMILES).
+    """
+    smi_list = smi.split('.')
+    num_mols = len(smi_list)
+    if num_mols == 1:
+        return smi_list[0]
+    else:
+        # keep the largest molecule
+        smi_lens = [len(s) for s in smi_list]
+        idx = np.argmax(smi_lens)
+        return smi_list[idx]
+
+
 def clean_smiles(df,
                  min_heavy_atoms=MIN_HEAVY_ATOMS,
                  max_heavy_atoms=MAX_HEAVY_ATOMS,
@@ -68,6 +84,9 @@ def clean_smiles(df,
         for smi in df_invalid.SMILES:
             print(smi)
     df = df.query('invalid_smiles == False').drop('invalid_smiles', axis=1)   # remove the temporary column
+
+    print('If any SMILES contain multiple molecules, only the largest will be kept...')
+    df.SMILES = df.SMILES.apply(remove_multiple_compounds)
 
     # apply additional filters based on number of heavy atoms and atom type
     kwargs = {
