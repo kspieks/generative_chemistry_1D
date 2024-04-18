@@ -111,6 +111,40 @@ class GenerativePrior:
     dropout_hidden: float = 0
 
 @dataclass
+class GenerativeBias:
+    """
+    Class to store arguments for biasing a generative prior.
+    
+    Args:
+        vocab_file: text file containing tokens that define the vocabulary.
+        prior_checkpoint_path: path to an RNN checkpoint file to use as a Prior.
+        agent_checkpoint_path: path to an RNN checkpoint file to use as a Agent. Defaults to Prior checkpoint.
+        agent_save_path: path to save the biased agent to.
+        num_steps: number of training interations.
+        batch_size: number of sequences to sample at each iteration.
+        init_lr: initial learning rate.
+        reward_multiplier: factor used in calculating augmented log-likelihood.
+        dropout_input: dropout applied to the embeddings before input to RNN.
+        dropout_hidden: dropout applied between hidden layers of RNN.
+    """
+    vocab_file: str
+    prior_checkpoint_path: str
+    agent_checkpoint_path: str = ''
+    agent_save_path: str = 'Agent.ckpt'
+    
+    num_steps: int = 20
+    batch_size: int = 64
+    init_lr: float = 5e-4
+    reward_multiplier: float = 80.0
+    dropout_input: float = 0
+    dropout_hidden: float = 0
+
+    def __post_init__(self):
+        # by default, restore Agent to the same model as Prior
+        if not self.agent_checkpoint_path:
+            self.agent_checkpoint_path = self.prior_checkpoint_path
+
+@dataclass
 class GenerativeSample:
     """
     Class to store arguments for sampling a generative model.
