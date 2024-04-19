@@ -29,9 +29,9 @@ def clean_gen_data(preprocess_data_args):
                       )
     
     # save the cleaned SMILES
-    directory = os.path.dirname(preprocess_data_args.pred_output_file)
+    directory = os.path.dirname(preprocess_data_args.gen_output_file)
     os.makedirs(directory, exist_ok=True)
-    with open(preprocess_data_args.pred_output_file, 'w') as f:
+    with open(preprocess_data_args.gen_output_file, 'w') as f:
         f.write('\n'.join(df.SMILES.values) + '\n')
 
     # create the vocabulary
