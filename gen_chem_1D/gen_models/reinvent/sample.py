@@ -77,7 +77,7 @@ def sample(gen_sample_args):
                 gen_inchi_keys = list(gen_inchi_keys)
     
     percent_vu = len(gen_valid_unique_smiles)/(step * gen_sample_args.batch_size)*100
-    print(f'In total, {len(gen_valid_unique_smiles)} SMILES (i.e., {percent_vu:.2f}) were valid and unique')
+    print(f'In total, {len(gen_valid_unique_smiles)} SMILES (i.e., {percent_vu:.2f}%) were valid and unique')
 
     df = pd.DataFrame(gen_valid_unique_smiles, columns=['SMILES'])
     df['inchi_key'] = gen_inchi_keys
