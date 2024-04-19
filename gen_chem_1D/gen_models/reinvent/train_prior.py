@@ -24,6 +24,12 @@ def train_prior(gen_prior_args):
     Args:
         gen_prior_args: dataclass storing arugments for training a generative prior.
     """
+    # silence rdkit warning
+    RDLogger.DisableLog('rdApp.*') 
+
+    # create output directory
+    os.makedirs(gen_prior_args.out_dir, exist_ok=True)
+
     # read in vocabulary and initialize prior
     voc = Vocabulary(init_from_file=gen_prior_args.vocab_file)
     Prior = RNN(voc=voc)
@@ -42,6 +48,7 @@ def train_prior(gen_prior_args):
     
     optimizer = torch.optim.Adam(Prior.rnn.parameters(), lr=gen_prior_args.init_lr)
     for epoch in range(1, gen_prior_args.num_epochs):
+        print(f'Epoch: {epoch}')
         for step, batch in tqdm(enumerate(data), total=len(data)):
             # sample from DataLoader
             seqs = batch.long()
@@ -60,7 +67,7 @@ def train_prior(gen_prior_args):
             if (step % N == 0 and step != 0) or (len(data) < N and step==len(data) - 1):
                 decrease_learning_rate(optimizer, decrease_by=0.03)
                 tqdm.write("*" * 50)
-                tqdm.write(f"Epoch {epoch:4d}\t step {step:4d}\t loss: {loss.data[0]:5.2f}\n")
+                tqdm.write(f"Epoch {epoch:4d}\t step {step:4d}\t loss: {loss.data.item():5.2f}\n")
 
                 # test the validity of the generated smiles
                 Prior.rnn.eval()
