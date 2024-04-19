@@ -62,3 +62,23 @@ def get_unique(arr):
     if torch.cuda.is_available():
         return torch.LongTensor(np.sort(idxs)).cuda()
     return torch.LongTensor(np.sort(idxs))
+
+
+def get_ss_score(smiles, patts):
+    """
+    Finds if compounds from list of smiles contain substructure from patts.
+
+    Args:
+        smiles: list of generated SMILES strings.
+        patts: list of RDKit mols to use for substructure matching.
+    
+    Returns:
+        matrix of size num smiles x num patterns. 1 indicates match. 0 otherwise.
+    """
+    match = np.zeros((len(smiles), len(patts)))
+    for si, s in enumerate(smiles):
+        mol = Chem.MolFromSmiles(s)
+        if mol:
+            for pi, p in enumerate(patts):
+                if mol.GetSubstructMatch(p): match[si, pi] = 1
+    return match

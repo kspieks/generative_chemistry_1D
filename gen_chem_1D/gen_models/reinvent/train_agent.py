@@ -27,6 +27,10 @@ def train_agent(gen_bias_args):
     # silence rdkit warnings
     RDLogger.DisableLog('rdApp.*') 
 
+    if gen_bias_args.substructs:
+        ss_frac = np.array([float(v[0]) for v in gen_bias_args.substructs.values()])
+        ss_patts = [Chem.MolFromSmiles(smi) for smi in gen_bias_args.substructs.keys()]
+
     # read in vocabulary and initialize prior
     voc = Vocabulary(init_from_file=gen_bias_args.vocab_file)
     Prior = RNN(voc=voc)
@@ -87,6 +91,11 @@ def train_agent(gen_bias_args):
         # get prior likelihood, score, and fraction of acceptable
         prior_likelihood, _ = Prior.likelihood(Variable(seqs))
         score, frac = scoring_function(valid_unique_smiles)
+
+        if gen_bias_args.substructs:
+            score_sub = get_ss_score(valid_unique_smiles, ss_patts)
+            print(f'Num with Substruct: {[str(int(si)) for si in np.sum(score_sub, axis=0)]}')
+            score = score * (1 + np.sum(ss_frac * score_sub, axis=1))
 
         # calculate augmented likelihood and loss
         augmented_likelihood = prior_likelihood + gen_bias_args.reward_multiplier * Variable(score)
