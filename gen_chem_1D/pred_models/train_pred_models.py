@@ -2,8 +2,8 @@ import argparse
 from pprint import pprint
 
 import pandas as pd
-from rf_model import train_rf
 
+from gen_chem_1D.pred_models.rf_model import train_rf
 from gen_chem_1D.data.data_classes import PredictiveModel
 from gen_chem_1D.utils.parsing import read_yaml_file
 
@@ -29,6 +29,7 @@ def train_pred_model(pred_model_args):
     else:
         msg = f"Currently, `random_forest` is the only supported model type. Got: {pred_model_args.model}."
         raise ValueError(msg)
+
 
 def main():
     parser = argparse.ArgumentParser(description="Script to train predictive models.")

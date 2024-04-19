@@ -87,3 +87,18 @@ def train_rf(df,
         # save the test set predictions so we can make plots later
         csv_file = os.path.join(save_dir, f'rf_{target}_preds.csv')
         df_preds.to_csv(csv_file, index=False)
+
+
+def predict_rf(smiles, file_path):
+    # put SMILES in a dataframe
+    df = pd.DataFrame(smiles, columns=['SMILES'])
+
+    # create molecular features
+    X = create_features(df)
+
+    # get the trained model and make predictions
+    with open(file_path, 'rb') as f:
+        rf_model = pkl.load(f)
+    y_pred = rf_model.predict(X)
+
+    return y_pred
