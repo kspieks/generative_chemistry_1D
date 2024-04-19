@@ -50,7 +50,7 @@ def train_agent(gen_bias_args):
     for param in Prior.rnn.parameters():
         param.requires_grad = False
 
-    optimizer = torch.optim.Adam(Agent.rnn.parameters(), lr=gen_bias_args.learning_rate)
+    optimizer = torch.optim.Adam(Agent.rnn.parameters(), lr=gen_bias_args.init_lr)
 
     # define scoring function(s)
     scoring_function = Scorer(scoring_functions=gen_bias_args.scoring_functions)
