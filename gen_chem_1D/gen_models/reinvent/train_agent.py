@@ -4,14 +4,15 @@ import argparse
 from pprint import pprint
 
 import numpy as np
-from rdkit import RDLogger
+from rdkit import Chem, RDLogger
 import torch
 
-from ...pred_models.scoring_functions import Scorer
-from .data import Experience
-from .model import RNN
-from .tokenization import Vocabulary
-from .utils import get_unique, seq_to_smiles, validate_smiles, Variable
+
+from gen_chem_1D.gen_models.reinvent.data import Experience
+from gen_chem_1D.gen_models.reinvent.model import RNN
+from gen_chem_1D.gen_models.reinvent.tokenization import Vocabulary
+from gen_chem_1D.gen_models.reinvent.utils import get_unique, seq_to_smiles, get_ss_score, validate_smiles, Variable
+from gen_chem_1D.pred_models.scoring_functions import Scorer
 from gen_chem_1D.data.data_classes import GenerativeBias
 from gen_chem_1D.utils.parsing import read_yaml_file
 
@@ -23,7 +24,7 @@ def train_agent(gen_bias_args):
     Args:
         gen_bias_args: dataclass storing arugments for biasing a generative prior.
     """
-    # silence rdkit warning
+    # silence rdkit warnings
     RDLogger.DisableLog('rdApp.*') 
 
     # read in vocabulary and initialize prior
