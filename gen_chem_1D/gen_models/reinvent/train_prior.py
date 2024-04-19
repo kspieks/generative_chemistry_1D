@@ -5,7 +5,7 @@ import os
 from pprint import pprint
 
 import torch
-from rdkit import Chem
+from rdkit import Chem, RDLogger
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
