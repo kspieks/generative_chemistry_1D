@@ -1,4 +1,5 @@
 """Functions to clean and filter SMILES during data preprocessing."""
+import numpy as np
 from rdkit import Chem
 
 from .data_classes import MIN_HEAVY_ATOMS, MAX_HEAVY_ATOMS, SUPPORTED_ELEMENTS
