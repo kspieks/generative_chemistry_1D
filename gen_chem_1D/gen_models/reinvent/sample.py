@@ -29,19 +29,9 @@ def sample(gen_sample_args):
     # load vocabulary and initialize generator
     voc = Vocabulary(init_from_file=gen_sample_args.vocab_file)
     if gen_sample_args.scaffold_constraint:
-        Agent = ScaffoldConstrainedRNN(voc=voc,
-                                       embedding_size=gen_sample_args.embedding_size,
-                                       hidden_size=gen_sample_args.hidden_size,
-                                       dropout_input=gen_sample_args.dropout_input,
-                                       dropout_hidden=gen_sample_args.dropout_hidden,
-                                       )
+        Agent = ScaffoldConstrainedRNN(voc=voc)
     else:
-        Agent = RNN(voc=voc,
-                    embedding_size=gen_sample_args.embedding_size,
-                    hidden_size=gen_sample_args.hidden_size,
-                    dropout_input=gen_sample_args.dropout_input,
-                    dropout_hidden=gen_sample_args.dropout_hidden,
-                    )
+        Agent = RNN(voc=voc)
 
     # put model on device and set to evaluation mode
     if torch.cuda.is_available():

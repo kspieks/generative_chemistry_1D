@@ -26,11 +26,7 @@ def train_prior(gen_prior_args):
     """
     # read in vocabulary and initialize prior
     voc = Vocabulary(init_from_file=gen_prior_args.vocab_file)
-    Prior = RNN(voc=voc,
-                embedding_size=gen_prior_args.embedding_size,
-                hidden_size=gen_prior_args.hidden_size,
-                dropout_input=gen_prior_args.dropout_input,
-                dropout_hidden=gen_prior_args.dropout_hidden)
+    Prior = RNN(voc=voc)
 
     # optionally restore and continue training an RNN
     if gen_prior_args.checkpoint_path:

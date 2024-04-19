@@ -90,25 +90,23 @@ class GenerativePrior:
         vocab_file: text file containing tokens that define the vocabulary.
         smi_path: path to a file containing cleaned SMILES.
         checkpoint_path: optional path to a pre-trained generative model.
+        out_dir: directory to write models to.
         num_epochs: number of training epochs.
         batch_size: number of sequences to sample at each iteration.
         init_lr: initial learning rate.
-        embedding_size: dimension of the embedding.
-        hidden_size: dimension of the hidden layers.
-        dropout_input: dropout applied to the embeddings before input to RNN.
-        dropout_hidden: dropout applied between hidden layers of RNN.
     """
     vocab_file: str
     smi_path: str
-    checkpoint_path: str
+    out_dir: str
+    checkpoint_path: str = ''
+
     num_epochs: int = 20
     batch_size: int = 128
     init_lr: float = 1e-3
-    
-    embedding_size: int = 128
-    hidden_size: int = 512
-    dropout_input: float = 0
-    dropout_hidden: float = 0
+
+    def __post_init__(self):
+        for field in fields(self):
+            setattr(self, field.name, field.type(getattr(self, field.name)))
 
 @dataclass
 class GenerativeBias:
@@ -124,8 +122,6 @@ class GenerativeBias:
         batch_size: number of sequences to sample at each iteration.
         init_lr: initial learning rate.
         reward_multiplier: factor used in calculating augmented log-likelihood.
-        dropout_input: dropout applied to the embeddings before input to RNN.
-        dropout_hidden: dropout applied between hidden layers of RNN.
     """
     vocab_file: str
     prior_checkpoint_path: str
@@ -136,10 +132,12 @@ class GenerativeBias:
     batch_size: int = 64
     init_lr: float = 5e-4
     reward_multiplier: float = 80.0
-    dropout_input: float = 0
-    dropout_hidden: float = 0
+
+    scoring_functions: Dict = field(default_factory=lambda: dict())
+    substructs: Dict = field(default_factory=lambda: dict)
 
     def __post_init__(self):
+        self.init_lr = float(self.init_lr)
         # by default, restore Agent to the same model as Prior
         if not self.agent_checkpoint_path:
             self.agent_checkpoint_path = self.prior_checkpoint_path
@@ -157,10 +155,6 @@ class GenerativeSample:
         output_file: csv filepath to write results to.
         batch_size: number of sequences to sample at each iteration.
         scaffold_constraint: optional SMILES containing * for controlled generation e.g., CC(*)CC.
-        embedding_size: dimension of the embedding.
-        hidden_size: dimension of the hidden layers.
-        dropout_input: dropout applied to the embeddings before input to RNN.
-        dropout_hidden: dropout applied between hidden layers of RNN.
     """
     checkpoint_path: str
     vocab_file: str
@@ -173,7 +167,3 @@ class GenerativeSample:
     
     batch_size: int = 128
     scaffold_constraint: str = ''
-    embedding_size: int = 128
-    hidden_size: int = 512
-    dropout_input: float = 0
-    dropout_hidden: float = 0
