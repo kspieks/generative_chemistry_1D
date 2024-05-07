@@ -28,7 +28,7 @@ def train_agent(gen_bias_args):
     RDLogger.DisableLog('rdApp.*') 
 
     if gen_bias_args.substructs:
-        ss_frac = np.array([float(v[0]) for v in gen_bias_args.substructs.values()])
+        ss_frac = np.array([float(v) for v in gen_bias_args.substructs.values()])
         ss_patts = [Chem.MolFromSmiles(smi) for smi in gen_bias_args.substructs.keys()]
 
     # read in vocabulary and initialize prior
