@@ -64,6 +64,16 @@ def train_agent(gen_bias_args):
     print("Model initialized, starting training...")
     best_score = 0
     for step in range(gen_bias_args.num_steps):
+        # increase learning rate linearly from 5% to 100% of specified rate over first 20 steps
+        if step < 20:
+            for param_group in optimizer.param_groups:
+                param_group['lr'] = (step + 1) * gen_bias_args.gen_bias_args.init_lr / 20.0
+
+        # after 20 steps, decrease learning rate by 2% for each step
+        else:
+            for param_group in optimizer.param_groups:
+                param_group['lr'] *= 0.98
+
         # sample from Agent
         seqs, _, _ = Agent.sample(batch_size=gen_bias_args.batch_size)
         Agent.rnn.train()
