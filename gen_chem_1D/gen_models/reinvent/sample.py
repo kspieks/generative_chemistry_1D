@@ -69,6 +69,7 @@ def sample(gen_sample_args):
             gen_inchi_keys += list(inchi_keys)
             print(f'Generated {len(valid_smiles)} valid SMILES i.e., {len(valid_smiles)/gen_sample_args.batch_size * 100:.2f}%')
             print(f'From those, {len(valid_unique_smiles)} were unique i.e., {len(valid_unique_smiles)/len(valid_smiles) * 100:.2f}%\n')
+            print(f'Total generated: {len(gen_valid_unique_smiles)}')
 
             # remove any duplcates
             if len(gen_valid_unique_smiles) >= gen_sample_args.num_smiles:
@@ -85,6 +86,7 @@ def sample(gen_sample_args):
     # get scores for the generated smiles
     for pred_target, sub_dict in gen_sample_args.pred_models.items():
         if sub_dict['model'] == 'random_forest':
+            print(f'Obtaining predictions for {pred_target}')
             preds = predict_rf(gen_valid_unique_smiles, sub_dict['path'])
             df[f'rf_{pred_target}'] = preds
 
