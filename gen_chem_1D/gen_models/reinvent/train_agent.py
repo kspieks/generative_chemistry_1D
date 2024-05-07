@@ -67,7 +67,7 @@ def train_agent(gen_bias_args):
         # increase learning rate linearly from 5% to 100% of specified rate over first 20 steps
         if step < 20:
             for param_group in optimizer.param_groups:
-                param_group['lr'] = (step + 1) * gen_bias_args.gen_bias_args.init_lr / 20.0
+                param_group['lr'] = (step + 1) * gen_bias_args.init_lr / 20.0
 
         # after 20 steps, decrease learning rate by 2% for each step
         else:
