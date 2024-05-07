@@ -64,13 +64,13 @@ def train_agent(gen_bias_args):
     print("Model initialized, starting training...")
     best_score = 0
     for step in range(gen_bias_args.num_steps):
-        # Sample from Agent
+        # sample from Agent
         seqs, _, _ = Agent.sample(batch_size=gen_bias_args.batch_size)
         Agent.rnn.train()
         agent_likelihood, entropy = Agent.likelihood(Variable(seqs))
         Agent.rnn.eval()
 
-        # Remove duplicates, ie only consider unique seqs
+        # remove duplicates i.e., only consider unique sequences
         unique_idxs = get_unique(seqs)
         seqs = seqs[unique_idxs]
         agent_likelihood = agent_likelihood[unique_idxs]

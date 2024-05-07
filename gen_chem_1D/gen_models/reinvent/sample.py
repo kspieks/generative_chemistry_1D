@@ -51,7 +51,7 @@ def sample(gen_sample_args):
             step += 1   # count number of iterations
             print(f'Batch {step}:')
 
-            # Sample from Agent and convert the generated sequence to smiles
+            # sample from Agent and convert the generated sequence to smiles
             if gen_sample_args.scaffold_constraint:
                 seqs, _agent_likelihood, _entropy = Agent.sample(gen_sample_args.batch_size,
                                                                  pattern=gen_sample_args.scaffold_constraint,
