@@ -89,6 +89,7 @@ def sample(gen_sample_args):
             print(f'Obtaining predictions for {pred_target}')
             preds = predict_rf(gen_valid_unique_smiles, sub_dict['path'])
             df[f'rf_{pred_target}'] = preds
+            print(f'Mean +- std: {preds.mean():.3f} +- {preds.std():.3f}\n')
 
     df.to_csv(gen_sample_args.output_file, index=False)
 
