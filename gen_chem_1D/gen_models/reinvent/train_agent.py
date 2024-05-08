@@ -12,7 +12,7 @@ from gen_chem_1D.gen_models.reinvent.data import Experience
 from gen_chem_1D.gen_models.reinvent.model import RNN
 from gen_chem_1D.gen_models.reinvent.tokenization import Vocabulary
 from gen_chem_1D.gen_models.reinvent.utils import (Variable, get_ss_score,
-                                                   get_unique, seq_to_smiles,
+                                                   get_unique_indices, seq_to_smiles,
                                                    get_valid_unique_smiles_idx)
 from gen_chem_1D.pred_models.scoring_functions import Scorer
 from gen_chem_1D.utils.parsing import read_yaml_file
@@ -82,12 +82,12 @@ def train_agent(gen_bias_args):
         Agent.rnn.eval()
 
         # remove duplicates i.e., only consider unique sequences
-        unique_idxs = get_unique(seqs)
+        unique_idxs = get_unique_indices(seqs)
         seqs = seqs[unique_idxs]
         agent_likelihood = agent_likelihood[unique_idxs]
         entropy = entropy[unique_idxs]
 
-        # convert the generated sequence to smiles
+        # convert the generated sequences to a list of smiles
         gen_smiles = seq_to_smiles(seqs, voc)
         
         # filter out any invalid and duplicate smiles
@@ -138,8 +138,7 @@ def train_agent(gen_bias_args):
 
         print(f'Step {step}: Loss = {loss.item():.2f}')
         print(f'Generated {len(v_smiles)} valid SMILES i.e., {len(v_smiles)/gen_bias_args.batch_size * 100:.2f}%')
-        print(f'From those, {len(vu_smiles)} were unique i.e., {len(vu_smiles)/len(v_smiles) * 100:.2f}%')
-        print(f'Overall, {len(vu_smiles)/gen_bias_args.batch_size * 100:.2f}% were unique')
+        print(f'{len(vu_smiles)} were unique i.e., {len(vu_smiles)/len(v_smiles) * 100:.2f}% of the valid SMILES and {len(vu_smiles)/gen_sample_args.batch_size * 100:.2f}% of the batch')
         print(f'{ndup} generated molecules had duplicate InChi keys')
         print('Fraction in acceptable range:')
         for i, n in enumerate(names):

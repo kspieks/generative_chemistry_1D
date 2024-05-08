@@ -79,7 +79,7 @@ def get_valid_unique_smiles_idx(smiles):
     return v_smiles, v_inchi_key, vu_smiles, vu_inchi_key, vu_indices, ndup
 
 
-def get_unique(arr):
+def get_unique_indices(arr):
     # find unique rows in arr and return their indices
     arr = arr.cpu().numpy()
     arr_ = np.ascontiguousarray(arr).view(np.dtype((np.void, arr.dtype.itemsize * arr.shape[1])))

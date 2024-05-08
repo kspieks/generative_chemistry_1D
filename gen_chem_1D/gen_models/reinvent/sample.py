@@ -11,7 +11,7 @@ import torch
 from gen_chem_1D.data.data_classes import GenerativeSample
 from gen_chem_1D.gen_models.reinvent.model import RNN, ScaffoldConstrainedRNN
 from gen_chem_1D.gen_models.reinvent.tokenization import Vocabulary
-from gen_chem_1D.gen_models.reinvent.utils import seq_to_smiles, validate_smiles
+from gen_chem_1D.gen_models.reinvent.utils import get_unique_indices, get_valid_unique_smiles_idx, seq_to_smiles
 from gen_chem_1D.pred_models.rf_model import predict_rf
 from gen_chem_1D.utils.parsing import read_yaml_file
 
@@ -59,16 +59,20 @@ def sample(gen_sample_args):
             else:
                 seqs, _agent_likelihood, _entropy = Agent.sample(gen_sample_args.batch_size,
                                                                  max_length=gen_sample_args.max_len)
+            
+            # remove any duplicates i.e., only consider unique sequences
+            unique_idxs = get_unique_indices(seqs)
+            seqs = seqs[unique_idxs]
+
+            # convert the generated sequences to a list of smiles
             gen_smiles = seq_to_smiles(seqs, voc)
 
             # filter out any invalid and duplicate smiles
-            valid_smiles, inchi_keys = validate_smiles(gen_smiles)
-            inchi_keys, idxs = np.unique(inchi_keys, return_index=True)
-            valid_unique_smiles = [valid_smiles[i] for i in idxs]
-            gen_valid_unique_smiles += valid_unique_smiles
-            gen_inchi_keys += list(inchi_keys)
-            print(f'Generated {len(valid_smiles)} valid SMILES i.e., {len(valid_smiles)/gen_sample_args.batch_size * 100:.2f}%')
-            print(f'From those, {len(valid_unique_smiles)} were unique i.e., {len(valid_unique_smiles)/len(valid_smiles) * 100:.2f}%\n')
+            v_smiles, v_inchi_key, vu_smiles, vu_inchi_key, vu_indices, ndup = get_valid_unique_smiles_idx(gen_smiles)
+            gen_valid_unique_smiles += vu_smiles
+            gen_inchi_keys += vu_inchi_key
+            print(f'Generated {len(v_smiles)} valid SMILES i.e., {len(v_smiles)/gen_sample_args.batch_size * 100:.2f}%')
+            print(f'{len(vu_smiles)} were unique i.e., {len(vu_smiles)/len(v_smiles) * 100:.2f}% of the valid SMILES and {len(vu_smiles)/gen_sample_args.batch_size * 100:.2f}% of the batch')
             print(f'Total generated: {len(gen_valid_unique_smiles)}')
 
             # remove any duplcates
