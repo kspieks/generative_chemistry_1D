@@ -15,13 +15,14 @@ class ConvertScore():
         # already in range 0, 1
         if len(self.scale_params) == 1:
             self.acc = self.scale_params[0]
+
         # acceptable value, worst, best
         elif len(self.scale_params) == 3:
             self.b = self.scale_params[2]
             self.w = self.scale_params[1]
             self.acc = (self.scale_params[0] - self.w)/ (self.b - self.w)
         
-        # range: acceptable low, acceptable high, min value, max value
+        # acceptable low, acceptable high, min value, max value
         elif len(self.scale_params) == 4:
             self.b = (self.scale_params[0] + self.scale_params[1]) / 2
             self.w = max(abs(self.scale_params[2] - self.b), abs(self.scale_params[3] - self.b))
@@ -35,6 +36,8 @@ class ConvertScore():
         # acceptable value, worst, best
         elif len(self.scale_params) == 3:
             return (value - self.w) / (self.b - self.w)
+        
+        # acceptable low, acceptable high, min value, max value
         elif len(self.scale_params) == 4:
             return 1.0 - np.abs(self.b - value) / self.w
         
