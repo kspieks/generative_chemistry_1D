@@ -56,23 +56,27 @@ def validate_smiles(smiles_list):
 
 
 def get_valid_unique_smiles_idx(smiles):
-    """Takes a list of SMILES and returns index of unique InChI keys."""
-    myinchi = []
-    for i, s in enumerate(smiles):
+    """Takes a list of SMILES and returns list and index of the valid and unique InChI keys."""
+    inchi_keys = []
+    for s in smiles:
         mol = Chem.MolFromSmiles(s)
         if mol:
-            myinchi.append(Chem.inchi.MolToInchiKey(mol))
+            inchi_keys.append(Chem.inchi.MolToInchiKey(mol))
         else:
-            myinchi.append('')
+            inchi_keys.append('')
     
-    df = pd.DataFrame({'smiles': smiles, 'inchi': myinchi})
-    df2 = df[(~df.inchi.duplicated(keep=False)) & (df.inchi!='')]
+    df = pd.DataFrame({'smiles': smiles, 'inchi_keys': inchi_keys})
+    df_valid = df[df.inchi_keys!='']
+    v_smiles = df_valid.smiles.values.tolist()
+    v_inchi_key = df_valid.inchi_keys.values.tolist()
 
-    outsmiles = list(df2.smiles.to_numpy())
-    outi = list(df2.index)
-    ndup = len(df[(df.inchi.duplicated()) & (dfinchi!='')])
+    df_valid_unique = df[(~df.inchi_keys.duplicated()) & (df.inchi_keys!='')]
+    vu_smiles = df_valid_unique.smiles.values.tolist()
+    vu_inchi_key = df_valid_unique.inchi_keys.values.tolist()
+    vu_indices = list(df_valid_unique.index)
+    ndup = len(df[(df.inchi_keys.duplicated()) & (df.inchi_keys!='')])
 
-    return outsmiles, outi, ndup
+    return v_smiles, v_inchi_key, vu_smiles, vu_inchi_key, vu_indices, ndup
 
 
 def get_unique(arr):

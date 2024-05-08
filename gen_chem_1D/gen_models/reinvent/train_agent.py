@@ -13,7 +13,7 @@ from gen_chem_1D.gen_models.reinvent.model import RNN
 from gen_chem_1D.gen_models.reinvent.tokenization import Vocabulary
 from gen_chem_1D.gen_models.reinvent.utils import (Variable, get_ss_score,
                                                    get_unique, seq_to_smiles,
-                                                   validate_smiles, get_valid_unique_smiles_idx)
+                                                   get_valid_unique_smiles_idx)
 from gen_chem_1D.pred_models.scoring_functions import Scorer
 from gen_chem_1D.utils.parsing import read_yaml_file
 
@@ -91,19 +91,18 @@ def train_agent(gen_bias_args):
         gen_smiles = seq_to_smiles(seqs, voc)
         
         # filter out any invalid and duplicate smiles
-        valid_smiles, inchi_keys = validate_smiles(gen_smiles)
-        valid_unique_smiles, val_idxs, ndup = get_valid_unique_smiles_idx(gen_smiles)
-        seqs = seqs[val_idxs]
-        agent_likelihood = agent_likelihood[val_idxs]
-        entropy = entropy[val_idxs]
+        v_smiles, v_inchi_key, vu_smiles, vu_inchi_key, vu_indices, ndup = get_valid_unique_smiles_idx(gen_smiles)
+        seqs = seqs[vu_indices]
+        agent_likelihood = agent_likelihood[vu_indices]
+        entropy = entropy[vu_indices]
 
         # get prior likelihood, score, and fraction of acceptable
         prior_likelihood, _ = Prior.likelihood(Variable(seqs))
-        score, frac = scoring_function(valid_unique_smiles)
+        score, frac = scoring_function(vu_smiles)
 
         if gen_bias_args.substructs:
-            score_sub = get_ss_score(valid_unique_smiles, ss_patts)
-            print(f'Num with Substruct: {[str(int(si)) for si in np.sum(score_sub, axis=0)]}')
+            score_sub = get_ss_score(vu_smiles, ss_patts)
+            print(f'Num with substruct: {[str(int(si)) for si in np.sum(score_sub, axis=0)]}')
             score = score * (1 + np.sum(ss_frac * score_sub, axis=1))
 
         # calculate augmented likelihood and loss
@@ -113,13 +112,13 @@ def train_agent(gen_bias_args):
         # add new experience
         prior_likelihood = prior_likelihood.data.cpu().numpy()
         # ensure that dimensions all match before zipping together
-        if len(valid_unique_smiles) != len(score) or len(score) != len(prior_likelihood):
+        if len(vu_smiles) != len(score) or len(score) != len(prior_likelihood):
             msg = 'Dimension mismatch!\n'
-            msg += f'valid_unique_smiles has {len(valid_unique_smiles)} entries\n'
+            msg += f'vu_smiles has {len(vu_smiles)} entries\n'
             msg += f'score has {len(score)} entries\n'
             msg += f'prior_likelihood has {len(prior_likelihood)} entries\n'
             raise ValueError(msg)
-        new_experience = zip(valid_unique_smiles, score, prior_likelihood)
+        new_experience = zip(vu_smiles, score, prior_likelihood)
         experience.add_experience(new_experience)
 
         loss = loss.mean()
@@ -138,18 +137,18 @@ def train_agent(gen_bias_args):
         agent_likelihood = agent_likelihood.data.cpu().numpy()
 
         print(f'Step {step}: Loss = {loss.item():.2f}')
-        print(f'Generated {len(valid_smiles)} valid SMILES i.e., {len(valid_smiles)/gen_bias_args.batch_size * 100:.2f}%')
-        print(f'From those, {len(valid_unique_smiles)} were unique i.e., {len(valid_unique_smiles)/len(valid_smiles) * 100:.2f}%')
-        print(f'Overall, {len(valid_unique_smiles)/gen_bias_args.batch_size * 100:.2f}% were unique')
-        print(f'{ndup} SMILES had duplicate InChi keys')
+        print(f'Generated {len(v_smiles)} valid SMILES i.e., {len(v_smiles)/gen_bias_args.batch_size * 100:.2f}%')
+        print(f'From those, {len(vu_smiles)} were unique i.e., {len(vu_smiles)/len(v_smiles) * 100:.2f}%')
+        print(f'Overall, {len(vu_smiles)/gen_bias_args.batch_size * 100:.2f}% were unique')
+        print(f'{ndup} generated molecules had duplicate InChi keys')
         print('Fraction in acceptable range:')
         for i, n in enumerate(names):
             print(f'{n}: {frac[i]:.3f}')
 
         print(f"Agent LL: {np.mean(agent_likelihood):6.2f} Prior LL: {np.mean(prior_likelihood):6.2f} Aug LL: {np.mean(augmented_likelihood):6.2f} Score: {np.mean(score):6.2f}")
-        print("  Agent  Prior   Target  Score       SMILES")
-        for i in range(min(10, len(valid_unique_smiles) )):
-            print(f"{agent_likelihood[i]:6.2f}\t{prior_likelihood[i]:6.2f}\t{augmented_likelihood[i]:6.2f}\t{score[i]:6.2f} {valid_unique_smiles[i]}")
+        print("Agent\tPrior\tTarget\tScore\tSMILES")
+        for i in range(min(10, len(vu_smiles) )):
+            print(f"{agent_likelihood[i]:6.2f}\t{prior_likelihood[i]:6.2f}\t{augmented_likelihood[i]:6.2f}\t{score[i]:6.2f} {vu_smiles[i]}")
         print('\n\n')
 
         # save this agent in case we want to go back to it
