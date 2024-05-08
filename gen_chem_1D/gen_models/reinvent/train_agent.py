@@ -4,16 +4,17 @@ import argparse
 from pprint import pprint
 
 import numpy as np
-from rdkit import Chem, RDLogger
 import torch
+from rdkit import Chem, RDLogger
 
-
+from gen_chem_1D.data.data_classes import GenerativeBias
 from gen_chem_1D.gen_models.reinvent.data import Experience
 from gen_chem_1D.gen_models.reinvent.model import RNN
 from gen_chem_1D.gen_models.reinvent.tokenization import Vocabulary
-from gen_chem_1D.gen_models.reinvent.utils import get_unique, seq_to_smiles, get_ss_score, validate_smiles, Variable
+from gen_chem_1D.gen_models.reinvent.utils import (Variable, get_ss_score,
+                                                   get_unique, seq_to_smiles,
+                                                   validate_smiles, get_valid_unique_smiles_idx)
 from gen_chem_1D.pred_models.scoring_functions import Scorer
-from gen_chem_1D.data.data_classes import GenerativeBias
 from gen_chem_1D.utils.parsing import read_yaml_file
 
 
@@ -91,12 +92,10 @@ def train_agent(gen_bias_args):
         
         # filter out any invalid and duplicate smiles
         valid_smiles, inchi_keys = validate_smiles(gen_smiles)
-        inchi_keys, unique_idxs = np.unique(inchi_keys, return_index=True)
-
-        seqs = seqs[unique_idxs]
-        valid_unique_smiles = [valid_smiles[i] for i in unique_idxs]
-        agent_likelihood = agent_likelihood[unique_idxs]
-        entropy = entropy[unique_idxs]
+        valid_unique_smiles, val_idxs, ndup = get_valid_unique_smiles_idx(gen_smiles)
+        seqs = seqs[val_idxs]
+        agent_likelihood = agent_likelihood[val_idxs]
+        entropy = entropy[val_idxs]
 
         # get prior likelihood, score, and fraction of acceptable
         prior_likelihood, _ = Prior.likelihood(Variable(seqs))
@@ -113,6 +112,13 @@ def train_agent(gen_bias_args):
 
         # add new experience
         prior_likelihood = prior_likelihood.data.cpu().numpy()
+        # ensure that dimensions all match before zipping together
+        if len(valid_unique_smiles) != len(score) or len(score) != len(prior_likelihood):
+            msg = 'Dimension mismatch!\n'
+            msg += f'valid_unique_smiles has {len(valid_unique_smiles)} entries\n'
+            msg += f'score has {len(score)} entries\n'
+            msg += f'prior_likelihood has {len(prior_likelihood)} entries\n'
+            raise ValueError(msg)
         new_experience = zip(valid_unique_smiles, score, prior_likelihood)
         experience.add_experience(new_experience)
 
@@ -134,14 +140,16 @@ def train_agent(gen_bias_args):
         print(f'Step {step}: Loss = {loss.item():.2f}')
         print(f'Generated {len(valid_smiles)} valid SMILES i.e., {len(valid_smiles)/gen_bias_args.batch_size * 100:.2f}%')
         print(f'From those, {len(valid_unique_smiles)} were unique i.e., {len(valid_unique_smiles)/len(valid_smiles) * 100:.2f}%')
+        print(f'Overall, {len(valid_unique_smiles)/gen_bias_args.batch_size * 100:.2f}% were unique')
+        print(f'{ndup} SMILES had duplicate InChi keys')
         print('Fraction in acceptable range:')
         for i, n in enumerate(names):
             print(f'{n}: {frac[i]:.3f}')
 
         print(f"Agent LL: {np.mean(agent_likelihood):6.2f} Prior LL: {np.mean(prior_likelihood):6.2f} Aug LL: {np.mean(augmented_likelihood):6.2f} Score: {np.mean(score):6.2f}")
         print("  Agent  Prior   Target  Score       SMILES")
-        for i in range(min(10, len(valid_smiles) )):
-            print(f"{agent_likelihood[i]:6.2f}\t{prior_likelihood[i]:6.2f}\t{augmented_likelihood[i]:6.2f}\t{score[i]:6.2f} {valid_smiles[i]}")
+        for i in range(min(10, len(valid_unique_smiles) )):
+            print(f"{agent_likelihood[i]:6.2f}\t{prior_likelihood[i]:6.2f}\t{augmented_likelihood[i]:6.2f}\t{score[i]:6.2f} {valid_unique_smiles[i]}")
         print('\n\n')
 
         # save this agent in case we want to go back to it
@@ -149,7 +157,7 @@ def train_agent(gen_bias_args):
         if np.mean(score) > best_score:
             best_score = np.mean(score)
             # also update the checkpoint for the best agent that satisfies the most objectives
-            torch.save(Agent.rnn.state_dict(), 'gen_model/biased_agent.ckpt') 
+            torch.save(Agent.rnn.state_dict(), gen_bias_args.agent_save_path) 
 
 
 def main():

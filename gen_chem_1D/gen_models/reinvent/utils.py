@@ -1,5 +1,6 @@
 """Collection of helper functions related to generative modeling."""
 import numpy as np
+import pandas as pd
 from rdkit import Chem
 import torch
 
@@ -52,6 +53,26 @@ def validate_smiles(smiles_list):
         except:
             pass
     return valid_smiles, inchikeys
+
+
+def get_valid_unique_smiles_idx(smiles):
+    """Takes a list of SMILES and returns index of unique InChI keys."""
+    myinchi = []
+    for i, s in enumerate(smiles):
+        mol = Chem.MolFromSmiles(s)
+        if mol:
+            myinchi.append(Chem.inchi.MolToInchiKey(mol))
+        else:
+            myinchi.append('')
+    
+    df = pd.DataFrame({'smiles': smiles, 'inchi': myinchi})
+    df2 = df[(~df.inchi.duplicated(keep=False)) & (df.inchi!='')]
+
+    outsmiles = list(df2.smiles.to_numpy())
+    outi = list(df2.index)
+    ndup = len(df[(df.inchi.duplicated()) & (dfinchi!='')])
+
+    return outsmiles, outi, ndup
 
 
 def get_unique(arr):
