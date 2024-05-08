@@ -41,7 +41,10 @@ def seq_to_smiles(seqs, voc):
 
 
 def validate_smiles(smiles_list):
-    """Takes a list of generated SMILES and returns the valid SMILES with corresponding InChI key."""
+    """
+    Takes a list of generated SMILES and returns the valid SMILES with corresponding InChI key.
+    Currently not used since the function below is more comprehensive.
+    """
     valid_smiles = []
     inchikeys = []
     for smi in smiles_list:
