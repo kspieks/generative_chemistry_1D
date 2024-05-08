@@ -146,8 +146,8 @@ def train_agent(gen_bias_args):
 
         # save this agent in case we want to go back to it
         torch.save(Agent.rnn.state_dict(), f'gen_model/biased_agent_step_{step}.ckpt')
-        if np.mean(frac) > best_score:
-            best_score = np.mean(frac)
+        if np.mean(score) > best_score:
+            best_score = np.mean(score)
             # also update the checkpoint for the best agent that satisfies the most objectives
             torch.save(Agent.rnn.state_dict(), 'gen_model/biased_agent.ckpt') 
 
