@@ -31,6 +31,7 @@ class Preprocess:
 
         gen_input_file: path to a csv file with SMILES to be cleaned before training a generative model.
         gen_output_file: path to write the cleaned SMILES for training a generative model.
+        gen_vocab_file: path to write the vocabulary to.
 
         min_heavy_atoms: minimum number of heavy atoms.
         max_heavy_atoms: maximum number of heavy atoms.
