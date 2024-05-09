@@ -95,6 +95,10 @@ class GenerativePrior:
         num_epochs: number of training epochs.
         batch_size: number of sequences to sample at each iteration.
         init_lr: initial learning rate.
+        embedding_size: dimension of the embedding.
+        hidden_size: dimension of the hidden layers.
+        dropout_input: dropout applied to the embeddings before input to RNN.
+        dropout_hidden: dropout applied between hidden layers of RNN.
     """
     vocab_file: str
     smi_path: str
@@ -104,6 +108,11 @@ class GenerativePrior:
     num_epochs: int = 20
     batch_size: int = 128
     init_lr: float = 1e-3
+
+    embedding_size: int = 128
+    hidden_size: int = 512
+    dropout_input: float = 0
+    dropout_hidden: float = 0
 
     def __post_init__(self):
         for field in fields(self):
@@ -123,6 +132,18 @@ class GenerativeBias:
         batch_size: number of sequences to sample at each iteration.
         init_lr: initial learning rate.
         reward_multiplier: factor used in calculating augmented log-likelihood.
+        scoring_functions: dictionary with scoring function to use. Example:
+            {'rf_logSolubility': 
+                {'model_path': 'pred_model/rf_lipo.pkl',
+                 'scale': [-1, -1.1, 4.5],
+                 },
+             'mw': [350, 450, 550, 600]
+            }
+        substructs: substructeres to reward or penalize during biasing. 
+        embedding_size: dimension of the embedding.
+        hidden_size: dimension of the hidden layers.
+        dropout_input: dropout applied to the embeddings before input to RNN.
+        dropout_hidden: dropout applied between hidden layers of RNN.
     """
     vocab_file: str
     prior_checkpoint_path: str
@@ -136,6 +157,11 @@ class GenerativeBias:
 
     scoring_functions: Dict = field(default_factory=lambda: dict())
     substructs: Dict = field(default_factory=lambda: dict)
+
+    embedding_size: int = 128
+    hidden_size: int = 512
+    dropout_input: float = 0
+    dropout_hidden: float = 0
 
     def __post_init__(self):
         self.init_lr = float(self.init_lr)
@@ -156,6 +182,11 @@ class GenerativeSample:
         output_file: csv filepath to write results to.
         batch_size: number of sequences to sample at each iteration.
         scaffold_constraint: optional SMILES containing * for controlled generation e.g., CC(*)CC.
+        embedding_size: dimension of the embedding.
+        hidden_size: dimension of the hidden layers.
+        dropout_input: dropout applied to the embeddings before input to RNN.
+        dropout_hidden: dropout applied between hidden layers of RNN.
+        num_epochs: number of training epochs.
     """
     checkpoint_path: str
     vocab_file: str
@@ -168,3 +199,8 @@ class GenerativeSample:
     
     batch_size: int = 128
     scaffold_constraint: str = ''
+
+    embedding_size: int = 128
+    hidden_size: int = 512
+    dropout_input: float = 0
+    dropout_hidden: float = 0

@@ -34,8 +34,18 @@ def train_agent(gen_bias_args):
 
     # read in vocabulary and initialize prior
     voc = Vocabulary(init_from_file=gen_bias_args.vocab_file)
-    Prior = RNN(voc=voc)
-    Agent = RNN(voc=voc)
+    Prior = RNN(voc=voc,
+                embedding_size=gen_bias_args.embedding_size,
+                hidden_size=gen_bias_args.hidden_size,
+                dropout_input=gen_bias_args.dropout_input,
+                dropout_hidden=gen_bias_args.dropout_hidden,
+                )
+    Agent = RNN(voc=voc,
+                embedding_size=gen_bias_args.embedding_size,
+                hidden_size=gen_bias_args.hidden_size,
+                dropout_input=gen_bias_args.dropout_input,
+                dropout_hidden=gen_bias_args.dropout_hidden,
+                )
 
     # saved models are partially on the GPU, but if we don't have cuda enabled we can re-map these to the CPU
     if torch.cuda.is_available():
