@@ -63,12 +63,13 @@ class PredictiveModel:
                             Must be columns in the csv file from input_file.
         model: string indicating which model type to use.
         hyperparameters: dictionary of hyperparameters to define the model architecture and training.
+        save_dir: directory to save predictive model(s) to.
     """
     input_file: str
     regression_targets: List[str]
-    save_dir: str
     model: str
     hyperparameters: Dict = field(default_factory=lambda: dict)
+    save_dir: str = 'pred_model'
 
     def __post_init__(self):
         supported_models = list(SUPPORTED_PRED_MODELS.keys())
