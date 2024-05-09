@@ -60,6 +60,8 @@ class CalcProp(ConvertScore):
         name = name.lower()
         if name == 'mw':
             self.func = Descriptors.MolWt
+        elif name == 'tpsa':
+            self.func = Descriptors.TPSA
         elif name == 'logp':
             self.func = Descriptors.MolLogP
         elif name == 'hbd':
@@ -68,8 +70,33 @@ class CalcProp(ConvertScore):
             self.func = Descriptors.NumHAcceptors
         elif name == 'rotb':
             self.func = Descriptors.NumRotatableBonds
+        elif name == 'fracsp3':
+            self.func = Descriptors.FractionCSP3
         elif name == 'coo_counts':
             self.func = Chem.Fragments.fr_COO
+        elif name == 'num_aromatic_rings':
+            def is_ring_aromatic(mol, bond_ring):
+                """
+                Helper function for identifying if a bond is aromatic.
+
+                Args:
+                    mol: RDKit molecule.
+                    bond_ring: RDKit bond from a ring.
+
+                Returns:
+                    True if the bond is in an aromatic ring. False otherwise.
+                """
+                for idx in bond_ring:
+                    if not mol.GetBondWithIdx(idx).GetIsAromatic():
+                        return False
+                return True
+
+            def get_num_aromatic_rings(mol):
+                num_aromatic_rings = 0
+                for ring_bonds in mol.GetRingInfo().BondRings():
+                    num_aromatic_rings += is_ring_aromatic(mol, ring_bonds)
+            
+            self.func = get_num_aromatic_rings
 
     def predict(self, smiles):
         mol = Chem.MolFromSmiles(smiles)
@@ -95,7 +122,6 @@ class RFPredictor(ConvertScore):
             try:
                 ap_fp = calc_atompair_fp(smiles)
                 dp_fp = calc_donorpair_fp(smiles)
-
                 X = np.hstack([ap_fp, dp_fp])
                 # reshape to num samples x feature size
                 out = self.rf.predict(X.reshape(1, -1))[0]
