@@ -41,6 +41,12 @@ def remove_stereochemistry(smi, canonicalize=True):
     return Chem.MolToSmiles(mol, canonical=canonicalize)
 
 
+def canoncalize_smiles(smi):
+    """Canonicalize the SMILES string."""
+    mol = Chem.MolFromSmiles(smi)
+    return Chem.MolToSmiles(mol, canonical=True)
+
+
 def remove_multiple_compounds(smi):
     """
     If a SMILES string contains multiple molecules,
@@ -61,12 +67,14 @@ def clean_smiles(df,
                  min_heavy_atoms=MIN_HEAVY_ATOMS,
                  max_heavy_atoms=MAX_HEAVY_ATOMS,
                  supported_elements=SUPPORTED_ELEMENTS,
+                 remove_stereochemistry=True,
+                 canonicalize=True,
                  ):
     """
     Cleans the SMILES from a dataframe:
         - remove any SMILES that cannot be rendered by RDKit
         - apply additional filters based on number of heavy atoms and atom type
-        - remove stereochemistry and create canonical SMILES
+        - optionally remove stereochemistry and create canonical SMILES
         - calculate InChI keys and remove duplcate entries
     """
     print('Cleaning dataset...')
@@ -107,8 +115,12 @@ def clean_smiles(df,
             print(smi)
     df = df.query('filtered_smiles == True').drop('filtered_smiles', axis=1)   # remove the temporary column
 
-    # remove stereochemistry and create canonical SMILES
-    df.SMILES = df.SMILES.apply(remove_stereochemistry)
+    # optionally remove stereochemistry and create canonical SMILES
+    if remove_stereochemistry:
+        kwargs = {'canonicalize': canonicalize}
+        df.SMILES = df.SMILES.apply(remove_stereochemistry, **kwargs)
+    elif canonicalize:
+        df.SMILES = df.SMILES.apply(canoncalize_smiles)
 
     # get InChI keys and remove duplicate compounds
     df['inchi_key'] = df.SMILES.apply(lambda smi: Chem.inchi.MolToInchiKey(Chem.MolFromSmiles(smi)))

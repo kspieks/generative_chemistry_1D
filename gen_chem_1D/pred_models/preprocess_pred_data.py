@@ -24,6 +24,8 @@ def clean_pred_data(preprocess_data_args):
                       min_heavy_atoms=preprocess_data_args.min_heavy_atoms,
                       max_heavy_atoms=preprocess_data_args.max_heavy_atoms,
                       supported_elements=preprocess_data_args.supported_elements,
+                      remove_stereochemistry=preprocess_data_args.remove_stereochemistry,
+                      canonicalize=preprocess_data_args.canonicalize,
                       )
     
     df.to_csv(preprocess_data_args.pred_output_file, index=False)

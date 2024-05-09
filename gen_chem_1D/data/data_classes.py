@@ -35,6 +35,8 @@ class Preprocess:
         min_heavy_atoms: minimum number of heavy atoms.
         max_heavy_atoms: maximum number of heavy atoms.
         supported_elements: set of supported atomic symbols.
+        remove_stereochemistry: boolean indicating whether to remove stereochemistry.
+        canonicalize: boolean indicating whether to canonicalize the SMILES.
     """
     pred_input_file: str = 'data.csv'
     pred_output_file: str = 'cleaned_data.csv'
@@ -46,6 +48,8 @@ class Preprocess:
     min_heavy_atoms: int = MIN_HEAVY_ATOMS
     max_heavy_atoms: int = MAX_HEAVY_ATOMS
     supported_elements: set = field(default_factory=lambda: SUPPORTED_ELEMENTS)
+    remove_stereochemistry: bool = True
+    canonicalize: bool = True
 
     def __post_init__(self):
         for field in fields(self):
