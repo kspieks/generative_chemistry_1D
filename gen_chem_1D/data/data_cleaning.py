@@ -67,7 +67,7 @@ def clean_smiles(df,
                  min_heavy_atoms=MIN_HEAVY_ATOMS,
                  max_heavy_atoms=MAX_HEAVY_ATOMS,
                  supported_elements=SUPPORTED_ELEMENTS,
-                 remove_stereochemistry=True,
+                 remove_stereo=True,
                  canonicalize=True,
                  ):
     """
@@ -116,9 +116,8 @@ def clean_smiles(df,
     df = df.query('filtered_smiles == True').drop('filtered_smiles', axis=1)   # remove the temporary column
 
     # optionally remove stereochemistry and create canonical SMILES
-    if remove_stereochemistry:
-        kwargs = {'canonicalize': canonicalize}
-        df.SMILES = df.SMILES.apply(remove_stereochemistry, **kwargs)
+    if remove_stereo:
+        df.SMILES = df.SMILES.apply(remove_stereochemistry, canonicalize=canonicalize)
     elif canonicalize:
         df.SMILES = df.SMILES.apply(canoncalize_smiles)
 
