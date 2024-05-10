@@ -35,7 +35,8 @@ def train_rf(df,
         y = df_target[target].values
 
         # use 80:20 time split to evaluate model performance
-        print(f'\n\n{target} has {len(df_target)} data points in total')
+        print('*'*88)
+        print(f'{target} has {len(df_target)} data points in total')
         num_train = int(0.8 * len(y))
         num_test = len(y) - num_train
         print('After splitting the data into 80% training and 20% testing, there are:')
@@ -53,7 +54,7 @@ def train_rf(df,
         naive_baseline(y_train, y_test)
 
         # now train a random forest model
-        print('\n\nTraining random forest model...')
+        print('\nTraining random forest model...')
         rf_model = RandomForestRegressor(**hyperparameters)
         rf_model.fit(X_train, y_train)
         
