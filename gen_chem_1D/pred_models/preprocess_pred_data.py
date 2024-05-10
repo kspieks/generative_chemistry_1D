@@ -3,8 +3,8 @@ from pprint import pprint
 
 import pandas as pd
 
-from gen_chem_1D.data.data_cleaning import clean_smiles
 from gen_chem_1D.data.data_classes import Preprocess
+from gen_chem_1D.data.data_cleaning import clean_smiles
 from gen_chem_1D.utils.parsing import read_yaml_file
 
 
@@ -24,7 +24,7 @@ def clean_pred_data(preprocess_data_args):
                       min_heavy_atoms=preprocess_data_args.min_heavy_atoms,
                       max_heavy_atoms=preprocess_data_args.max_heavy_atoms,
                       supported_elements=preprocess_data_args.supported_elements,
-                      remove_stereochemistry=preprocess_data_args.remove_stereochemistry,
+                      remove_stereo=preprocess_data_args.remove_stereo,
                       canonicalize=preprocess_data_args.canonicalize,
                       )
     
