@@ -39,12 +39,14 @@ def train_agent(gen_bias_args):
                 hidden_size=gen_bias_args.hidden_size,
                 dropout_input=gen_bias_args.dropout_input,
                 dropout_hidden=gen_bias_args.dropout_hidden,
+                temperature=gen_bias_args.temperature,
                 )
     Agent = RNN(voc=voc,
                 embedding_size=gen_bias_args.embedding_size,
                 hidden_size=gen_bias_args.hidden_size,
                 dropout_input=gen_bias_args.dropout_input,
                 dropout_hidden=gen_bias_args.dropout_hidden,
+                temperature=gen_bias_args.temperature,
                 )
 
     # saved models are partially on the GPU, but if we don't have cuda enabled we can re-map these to the CPU

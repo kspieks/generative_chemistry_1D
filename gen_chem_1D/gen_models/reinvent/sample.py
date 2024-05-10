@@ -34,6 +34,7 @@ def sample(gen_sample_args):
                                        hidden_size=gen_sample_args.hidden_size,
                                        dropout_input=gen_sample_args.dropout_input,
                                        dropout_hidden=gen_sample_args.dropout_hidden,
+                                       temperature=gen_sample_args.temperature,
                                        )
     else:
         Agent = RNN(voc=voc,
@@ -41,6 +42,7 @@ def sample(gen_sample_args):
                     hidden_size=gen_sample_args.hidden_size,
                     dropout_input=gen_sample_args.dropout_input,
                     dropout_hidden=gen_sample_args.dropout_hidden,
+                    temperature=gen_sample_args.temperature,
                     )
 
     # put model on device and set to evaluation mode

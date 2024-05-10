@@ -37,6 +37,7 @@ def train_prior(gen_prior_args):
                 hidden_size=gen_prior_args.hidden_size,
                 dropout_input=gen_prior_args.dropout_input,
                 dropout_hidden=gen_prior_args.dropout_hidden,
+                temperature=gen_prior_args.temperature,
                 )
 
     # optionally restore and continue training an RNN

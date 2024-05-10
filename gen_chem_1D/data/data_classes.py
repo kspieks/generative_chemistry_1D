@@ -104,6 +104,7 @@ class GenerativePrior:
         hidden_size: dimension of the hidden layers.
         dropout_input: dropout applied to the embeddings before input to RNN.
         dropout_hidden: dropout applied between hidden layers of RNN.
+        temperature: RNN temperature, alters diversity by rescaling logits.
     """
     vocab_file: str
     smi_path: str
@@ -118,6 +119,7 @@ class GenerativePrior:
     hidden_size: int = 512
     dropout_input: float = 0
     dropout_hidden: float = 0
+    temperature: float = 1.0
 
     def __post_init__(self):
         for field in fields(self):
@@ -149,6 +151,7 @@ class GenerativeBias:
         hidden_size: dimension of the hidden layers.
         dropout_input: dropout applied to the embeddings before input to RNN.
         dropout_hidden: dropout applied between hidden layers of RNN.
+        temperature: RNN temperature, alters diversity by rescaling logits.
     """
     vocab_file: str
     prior_checkpoint_path: str
@@ -167,6 +170,7 @@ class GenerativeBias:
     hidden_size: int = 512
     dropout_input: float = 0
     dropout_hidden: float = 0
+    temperature: float = 1.0
 
     def __post_init__(self):
         self.init_lr = float(self.init_lr)
@@ -192,6 +196,7 @@ class GenerativeSample:
         dropout_input: dropout applied to the embeddings before input to RNN.
         dropout_hidden: dropout applied between hidden layers of RNN.
         num_epochs: number of training epochs.
+        temperature: RNN temperature, alters diversity by rescaling logits.
     """
     checkpoint_path: str
     vocab_file: str
@@ -209,3 +214,4 @@ class GenerativeSample:
     hidden_size: int = 512
     dropout_input: float = 0
     dropout_hidden: float = 0
+    temperature: float = 1.0

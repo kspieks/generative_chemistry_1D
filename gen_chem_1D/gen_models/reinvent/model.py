@@ -64,6 +64,7 @@ class RNN():
                  hidden_size=512,
                  dropout_input=0.0,
                  dropout_hidden=0.0,
+                 temperature=1.0,
                  ):
         self.rnn = MultiGRU(vocab_size=voc.vocab_size,
                             embedding_size=embedding_size,
@@ -74,6 +75,7 @@ class RNN():
         if torch.cuda.is_available():
             self.rnn.cuda()
         self.voc = voc
+        self.temperature = temperature
 
     def likelihood(self, target):
         """
@@ -98,13 +100,13 @@ class RNN():
             # logits: batch size x vocab size e.g., 128 x 31
             # h: num GRU cells x batch size x hidden dimension e.g., 3 x 128 x 512
             logits, h = self.rnn(x[:, step], h)
-            log_prob = F.log_softmax(logits, dim=1)     # batch size x vocab size
-            prob = F.softmax(logits, dim=1)                    # batch size x vocab size
+            log_prob = F.log_softmax(logits / self.temperature, dim=1)  # batch size x vocab size
+            prob = F.softmax(logits / self.temperature, dim=1)          # batch size x vocab size
             log_probs += NLLLoss(log_prob, target[:, step])     # batch size
             entropy += -torch.sum((log_prob * prob), 1)         # batch size
         return log_probs, entropy
 
-    def sample(self, batch_size, max_length=140):
+    def sample(self, batch_size=128, max_length=140):
         """
         Sample a batch of sequences.
 
@@ -131,8 +133,8 @@ class RNN():
 
         for step in range(max_length):
             logits, h = self.rnn(x, h)
-            prob = F.softmax(logits, dim=1)
-            log_prob = F.log_softmax(logits, dim=1)
+            prob = F.softmax(logits / self.temperature, dim=1)
+            log_prob = F.log_softmax(logits / self.temperature, dim=1)
             x = torch.multinomial(prob, num_samples=1).view(-1)
             sequences.append(x.view(-1, 1))
             log_probs += NLLLoss(log_prob, x)
@@ -158,6 +160,7 @@ class ScaffoldConstrainedRNN():
                  hidden_size=512,
                  dropout_input=0.0,
                  dropout_hidden=0.0,
+                 temperature=1.0,
                  ):
         self.rnn = MultiGRU(vocab_size=voc.vocab_size,
                             embedding_size=embedding_size,
@@ -168,6 +171,7 @@ class ScaffoldConstrainedRNN():
         if torch.cuda.is_available():
             self.rnn.cuda()
         self.voc = voc
+        self.temperature = temperature
     
     def likelihood(self, target, max_length=140):
         """
@@ -191,8 +195,8 @@ class ScaffoldConstrainedRNN():
         entropy = Variable(torch.zeros(batch_size))
         for step in range(seq_length):
             logits, h = self.rnn(x[:, step], h)
-            log_prob = F.log_softmax(logits)
-            prob = F.softmax(logits)
+            log_prob = F.log_softmax(logits / self.temperature)
+            prob = F.softmax(logits / self.temperature)
             log_probs[:, step] = NLLLoss(log_prob, target[:, step])
             entropy += -torch.sum((log_prob * prob), 1)
         return log_probs, entropy
@@ -268,8 +272,8 @@ class ScaffoldConstrainedRNN():
             
             # sample according to conditional probability distribution of the RNN
             logits, h = self.rnn(x, h)
-            prob = F.softmax(logits, dim=1)
-            log_prob = F.log_softmax(logits, dim=1)
+            prob = F.softmax(logits / self.temperature, dim=1)
+            log_prob = F.log_softmax(logits / self.temperature, dim=1)
             x = torch.multinomial(prob, num_samples=1).view(-1)
             
             # If not opened, replace with current pattern token, else keep the sample
