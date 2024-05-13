@@ -78,10 +78,12 @@ def train_rf(df,
         df_preds[f'{target}_pred'] = np.concatenate((y_train_pred, y_test_pred))
 
         # re-train model using all data
+        print('\nRetraining RF model on all data...')
         rf_model.fit(X, y)
 
         # save the extended model
         pkl_file = os.path.join(save_dir, f'rf_{target}.pkl')
+        print(f'Saving the RF model to {pkl_file}')
         with open(pkl_file, 'wb') as f:
             pkl.dump(rf_model, f)
     
