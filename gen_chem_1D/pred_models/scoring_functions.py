@@ -54,8 +54,8 @@ class ConvertScore():
 
 class CalcProp(ConvertScore):
     """Scores structures based on calculated properties."""
-    def __init__(self, name, scale):
-        super().__init__(scale_params=scale)
+    def __init__(self, name, scale_params):
+        super().__init__(scale_params=scale_params)
         
         name = name.lower()
         if name == 'mw':
@@ -108,8 +108,8 @@ class CalcProp(ConvertScore):
 
 
 class RFPredictor(ConvertScore):
-    def __init__(self, model_path, scale=[0.5, 0., 1.]):
-        super().__init__(scale_params=scale)
+    def __init__(self, model_path, scale_params=[0.5, 0., 1.]):
+        super().__init__(scale_params=scale_params)
 
         # self.model_path = model_path
         with open(model_path, 'rb') as f:
@@ -137,7 +137,7 @@ class MultiScore():
         names = []
         for sf, params in scoring_functions.items():
             if sf.lower() in ['mw', 'logp', 'hbd', 'hba', 'rotb', 'coo_counts']:
-                scorers.append(CalcProp(name=sf, **params))
+                scorers.append(CalcProp(name=sf, scale_params=params))
             elif sf.split('_')[0] == 'rf':
                 scorers.append(RFPredictor(**params))
             names.append(sf)
