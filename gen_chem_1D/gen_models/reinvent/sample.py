@@ -85,7 +85,7 @@ def sample(gen_sample_args):
             gen_inchi_keys += vu_inchi_key
             print(f'Generated {len(v_smiles)} valid SMILES i.e., {len(v_smiles)/gen_sample_args.batch_size * 100:.2f}%')
             print(f'{len(vu_smiles)} were unique i.e., {len(vu_smiles)/len(v_smiles) * 100:.2f}% of the valid SMILES and {len(vu_smiles)/gen_sample_args.batch_size * 100:.2f}% of the batch')
-            print(f'Total generated: {len(gen_valid_unique_smiles)}')
+            print(f'Total generated: {len(gen_valid_unique_smiles)}\n')
 
             # remove any duplcates
             if len(gen_valid_unique_smiles) >= gen_sample_args.num_smiles:
@@ -94,7 +94,7 @@ def sample(gen_sample_args):
                 gen_inchi_keys = list(gen_inchi_keys)
     
     percent_vu = len(gen_valid_unique_smiles)/(step * gen_sample_args.batch_size)*100
-    print(f'In total, {len(gen_valid_unique_smiles)} SMILES (i.e., {percent_vu:.2f}%) were valid and unique')
+    print(f'In total, generated {len(gen_valid_unique_smiles)} SMILES (i.e., {percent_vu:.2f}%) were valid and unique')
 
     df = pd.DataFrame(gen_valid_unique_smiles, columns=['SMILES'])
     df['inchi_key'] = gen_inchi_keys
