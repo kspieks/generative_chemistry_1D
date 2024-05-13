@@ -152,7 +152,11 @@ class GenerativeBias:
                  },
              'mw': [350, 450, 550, 600]
             }
-        substructs: substructures to reward or penalize during biasing. 
+        substructure_matching: substructures to reward or penalize during biasing. Example:
+            {
+            'smiles': {'c1cccc1': 0.5},
+            'smarts': {'[*]1[*][*][*][*][*]1': 0.1}
+            }
         embedding_size: dimension of the embedding.
         hidden_size: dimension of the hidden layers.
         dropout_input: dropout applied to the embeddings before input to RNN.
@@ -170,7 +174,10 @@ class GenerativeBias:
     reward_multiplier: float = 80.0
 
     scoring_functions: Dict = field(default_factory=lambda: dict())
-    substructs: Dict = field(default_factory=lambda: dict)
+    substructure_matching: Dict = {
+        'smiles': field(default_factory=lambda: dict()),
+        'smarts': field(default_factory=lambda: dict()),
+    }
 
     embedding_size: int = 128
     hidden_size: int = 512
@@ -183,6 +190,7 @@ class GenerativeBias:
         # by default, restore Agent to the same model as Prior
         if not self.agent_checkpoint_path:
             self.agent_checkpoint_path = self.prior_checkpoint_path
+
 
 @dataclass
 class GenerativeSample:

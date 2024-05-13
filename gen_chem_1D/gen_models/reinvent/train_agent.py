@@ -29,9 +29,16 @@ def train_agent(gen_bias_args):
     # silence rdkit warnings
     RDLogger.DisableLog('rdApp.*') 
 
-    if gen_bias_args.substructs:
-        ss_frac = np.array([float(v) for v in gen_bias_args.substructs.values()])
-        ss_patts = [Chem.MolFromSmiles(smi) for smi in gen_bias_args.substructs.keys()]
+    if gen_bias_args.substructure_matching:
+        ss_frac = []
+        ss_patts = []
+        if len(gen_bias_args.substructure_matching['smiles']):
+            ss_frac.extend([float(v) for v in gen_bias_args.substructure_matching['smiles'].values()])
+            ss_patts.extend(Chem.MolFromSmiles(smi) for smi in gen_bias_args.substructure_matching['smiles'].keys())
+        if len(gen_bias_args.substructure_matching['smarts']):
+            ss_frac.extend([float(v) for v in gen_bias_args.substructure_matching['smarts'].values()])
+            ss_patts.extend(Chem.MolFromSmarts(smi) for smi in gen_bias_args.substructure_matching['smarts'].keys())
+        ss_frac = np.array(ss_frac)
 
     # read in vocabulary and initialize prior
     voc = Vocabulary(init_from_file=gen_bias_args.vocab_file)
@@ -115,7 +122,7 @@ def train_agent(gen_bias_args):
         prior_likelihood, _ = Prior.likelihood(Variable(seqs))
         score, frac = scoring_function(vu_smiles)
 
-        if gen_bias_args.substructs:
+        if gen_bias_args.substructure_matching:
             score_sub = get_ss_score(vu_smiles, ss_patts)
             print(f'Num with substruct: {[str(int(si)) for si in np.sum(score_sub, axis=0)]}')
             score = score * (1 + np.sum(ss_frac * score_sub, axis=1))
