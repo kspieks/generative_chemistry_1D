@@ -53,7 +53,6 @@ def train_prior(gen_prior_args):
                       collate_fn=MolData.collate_fn)
     
     optimizer = torch.optim.Adam(Prior.rnn.parameters(), lr=gen_prior_args.init_lr)
-    save_limit = 2
     save_paths = []
     for epoch in range(1, gen_prior_args.num_epochs):
         print(f'Epoch: {epoch}')
@@ -70,11 +69,10 @@ def train_prior(gen_prior_args):
             loss.backward()
             optimizer.step()
 
-            # every N steps, decrease learning rate and print some information
-            N = 50
+            # every N steps, decrease learning rate and print information about model validation
             best_percent_valid = 0
-            if (step % N == 0 and step != 0) or (len(data) < N and step==len(data) - 1):
-                decrease_learning_rate(optimizer, decrease_by=0.03)
+            if (step % gen_prior_args.num_steps == 0 and step != 0) or (len(data) < gen_prior_args.num_steps and step==len(data) - 1):
+                decrease_learning_rate(optimizer, decrease_by=gen_prior_args.decrease_lr)
                 tqdm.write("*" * 50)
                 tqdm.write(f"Epoch {epoch:4d}\t step {step:4d}\t loss: {loss.data.item():5.2f}\n")
 
@@ -95,7 +93,7 @@ def train_prior(gen_prior_args):
                     best_percent_valid = percent_valid
                     # save the checkpoint for the best model i.e., generates the highest percentage of valid SMILES
                     # delete the worst model from the list of best models
-                    if len(save_paths) >= save_limit:
+                    if len(save_paths) >= gen_prior_args.save_limit:
                         path_to_delete = save_paths.pop(0)
                         os.remove(path_to_delete)
                     save_path = os.path.join(gen_prior_args.out_dir, f"Prior_epoch_{epoch}.ckpt")

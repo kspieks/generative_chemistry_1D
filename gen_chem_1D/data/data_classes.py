@@ -100,6 +100,9 @@ class GenerativePrior:
         num_epochs: number of training epochs.
         batch_size: number of sequences to sample at each iteration.
         init_lr: initial learning rate.
+        num_steps: after the specified number of steps, decrease the learning rate and print info about model validation.
+        decrease_lr: after the specified number of steps, multiply the learning by (1 - decrease_lr).
+        save_limit: number of intermediate models to save.
         embedding_size: dimension of the embedding.
         hidden_size: dimension of the hidden layers.
         dropout_input: dropout applied to the embeddings before input to RNN.
@@ -114,6 +117,9 @@ class GenerativePrior:
     num_epochs: int = 20
     batch_size: int = 128
     init_lr: float = 1e-3
+    num_steps: int = 50
+    decrease_lr: float = 0.03
+    save_limit: int = 2
 
     embedding_size: int = 128
     hidden_size: int = 512
@@ -146,7 +152,7 @@ class GenerativeBias:
                  },
              'mw': [350, 450, 550, 600]
             }
-        substructs: substructeres to reward or penalize during biasing. 
+        substructs: substructures to reward or penalize during biasing. 
         embedding_size: dimension of the embedding.
         hidden_size: dimension of the hidden layers.
         dropout_input: dropout applied to the embeddings before input to RNN.
