@@ -150,7 +150,7 @@ def train_agent(gen_bias_args):
 
         print(f'Step {step}: Loss = {loss.item():.2f}')
         print(f'Generated {len(v_smiles)} valid SMILES i.e., {len(v_smiles)/gen_bias_args.batch_size * 100:.2f}%')
-        print(f'{len(vu_smiles)} were unique i.e., {len(vu_smiles)/len(v_smiles) * 100:.2f}% of the valid SMILES and {len(vu_smiles)/gen_sample_args.batch_size * 100:.2f}% of the batch')
+        print(f'{len(vu_smiles)} were unique i.e., {len(vu_smiles)/len(v_smiles) * 100:.2f}% of the valid SMILES and {len(vu_smiles)/gen_bias_args.batch_size * 100:.2f}% of the batch')
         print(f'{ndup} generated molecules had duplicate InChi keys')
         print('Fraction in acceptable range:')
         for i, n in enumerate(names):
