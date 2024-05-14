@@ -60,15 +60,18 @@ def validate_smiles(smiles_list):
 
 def get_valid_unique_smiles_idx(smiles):
     """Takes a list of SMILES and returns list and index of the valid and unique InChI keys."""
+    canonical_smiles = []
     inchi_keys = []
     for s in smiles:
         mol = Chem.MolFromSmiles(s)
         if mol:
+            canonical_smiles.append(Chem.MolToSmiles(mol, canonical=True))
             inchi_keys.append(Chem.inchi.MolToInchiKey(mol))
         else:
+            canonical_smiles.append('')
             inchi_keys.append('')
     
-    df = pd.DataFrame({'smiles': smiles, 'inchi_keys': inchi_keys})
+    df = pd.DataFrame({'smiles': canonical_smiles, 'inchi_keys': inchi_keys})
     df_valid = df[df.inchi_keys!='']
     v_smiles = df_valid.smiles.values.tolist()
     v_inchi_key = df_valid.inchi_keys.values.tolist()
