@@ -89,7 +89,7 @@ class Vocabulary(object):
         return len(self.chars)
 
     def __str__(self):
-        return "Vocabulary containing {} tokens: {}".format(len(self), self.chars)
+        return f"Vocabulary containing {len(self)} tokens: {self.chars}"
 
 
 def create_vocabulary(smiles_list):
