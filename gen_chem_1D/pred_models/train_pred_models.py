@@ -19,7 +19,8 @@ def train_pred_model(pred_model_args):
     # read in data as df
     df = pd.read_csv(pred_model_args.input_file)
 
-     # train the predictive model(s)
+    # train the predictive model(s)
+    print('Training predictive models...')
     if pred_model_args.model == 'random_forest':
         train_rf(df,
                  regression_targets=pred_model_args.regression_targets,
