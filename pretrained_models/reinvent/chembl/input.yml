@@ -1,0 +1,27 @@
+gen_model:
+    bias:
+        prior_checkpoint_path: Prior_ChEMBL_randomized.ckpt
+        vocab_file: vocab.txt
+        
+        agent_save_path: Agent.ckpt
+
+        embedding_size: int = 128
+        hidden_size: int = 512
+        dropout_input: float = 0
+        dropout_hidden: float = 0
+        temperature: float = 1.0
+
+    sample:
+        checkpoint_path: Prior_ChEMBL_randomized.ckpt
+        vocab_file: vocab.txt
+
+        embedding_size: int = 128
+        hidden_size: int = 512
+        dropout_input: float = 0
+        dropout_hidden: float = 0
+        temperature: float = 1.0
+
+        batch_size: 128
+        num_smiles: 200
+        max_len: 120
+        output_file: generated_smiles.csv
