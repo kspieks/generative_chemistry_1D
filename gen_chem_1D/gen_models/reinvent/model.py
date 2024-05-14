@@ -201,14 +201,18 @@ class ScaffoldConstrainedRNN():
             entropy += -torch.sum((log_prob * prob), 1)
         return log_probs, entropy
 
-    def sample(self, pattern="CC(C)(C(=O)O)c1ccc(cc1)C(O)CCCN2CCC(CC2)C(O)(*)c4ccccc4", batch_size=128, max_length=140):
+    def sample(self,
+               batch_size=128,
+               max_length=140,
+               pattern="CC(C)(C(=O)O)c1ccc(cc1)C(O)CCCN2CCC(CC2)C(O)(*)c4ccccc4",
+               ):
         """ 
         Sample a batch of sequences from a given scaffold constraint.
 
         Args:
-            pattern: SMILES scaffold that must be respected. Default is inspired by fexofenadine.
             batch_size: Number of sequences to sample.
             max_length: Maximum length of the generated sequences.
+            pattern: SMILES scaffold that must be respected. Default is inspired by fexofenadine.
 
         Returns:
             seqs: (batch_size, seq_length) The sampled sequences.

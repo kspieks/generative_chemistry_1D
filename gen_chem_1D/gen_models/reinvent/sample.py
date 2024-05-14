@@ -65,11 +65,11 @@ def sample(gen_sample_args):
 
             # sample from Agent and convert the generated sequence to smiles
             if gen_sample_args.scaffold_constraint:
-                seqs, _agent_likelihood, _entropy = Agent.sample(gen_sample_args.batch_size,
-                                                                 pattern=gen_sample_args.scaffold_constraint,
-                                                                 max_length=gen_sample_args.max_len)
+                seqs, _agent_likelihood, _entropy = Agent.sample(batch_size=gen_sample_args.batch_size,
+                                                                 max_length=gen_sample_args.max_len,
+                                                                 pattern=gen_sample_args.scaffold_constraint)
             else:
-                seqs, _agent_likelihood, _entropy = Agent.sample(gen_sample_args.batch_size,
+                seqs, _agent_likelihood, _entropy = Agent.sample(batch_size=gen_sample_args.batch_size,
                                                                  max_length=gen_sample_args.max_len)
             
             # remove any duplicates i.e., only consider unique sequences
