@@ -24,6 +24,7 @@ def train_prior(gen_prior_args):
     Args:
         gen_prior_args: dataclass storing arugments for training a generative prior.
     """
+    print('Training generative model...')
     # silence rdkit warning
     RDLogger.DisableLog('rdApp.*') 
 

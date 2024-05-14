@@ -26,6 +26,7 @@ def train_agent(gen_bias_args):
     Args:
         gen_bias_args: dataclass storing arugments for biasing a generative prior.
     """
+    print('Biasing generative model...')
     # silence rdkit warnings
     RDLogger.DisableLog('rdApp.*') 
 
