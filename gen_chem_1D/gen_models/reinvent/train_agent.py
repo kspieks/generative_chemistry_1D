@@ -33,12 +33,13 @@ def train_agent(gen_bias_args):
     if gen_bias_args.substructure_matching:
         ss_frac = []
         ss_patts = []
-        if len(gen_bias_args.substructure_matching['smiles']):
-            ss_frac.extend([float(v) for v in gen_bias_args.substructure_matching['smiles'].values()])
-            ss_patts.extend(Chem.MolFromSmiles(smi) for smi in gen_bias_args.substructure_matching['smiles'].keys())
-        if len(gen_bias_args.substructure_matching['smarts']):
-            ss_frac.extend([float(v) for v in gen_bias_args.substructure_matching['smarts'].values()])
-            ss_patts.extend(Chem.MolFromSmarts(smi) for smi in gen_bias_args.substructure_matching['smarts'].keys())
+        for key, sub_dict in gen_bias_args.substructure_matching.items():
+            if key == 'smiles':
+                ss_frac.extend([float(v) for v in sub_dict.values()])
+                ss_patts.extend([Chem.MolFromSmiles(smi) for smi in sub_dict.keys()])
+            elif key == 'smarts':
+                ss_frac.extend([float(v) for v in sub_dict.values()])
+                ss_patts.extend([Chem.MolFromSmarts(smi) for smi in sub_dict.keys()])
         ss_frac = np.array(ss_frac)
 
     # read in vocabulary and initialize prior
