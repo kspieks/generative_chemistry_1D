@@ -174,10 +174,7 @@ class GenerativeBias:
     reward_multiplier: float = 80.0
 
     scoring_functions: Dict = field(default_factory=lambda: dict())
-    substructure_matching: Dict = {
-        'smiles': field(default_factory=lambda: dict()),
-        'smarts': field(default_factory=lambda: dict()),
-    }
+    substructure_matching: Dict = field(default_factory=lambda: dict())
 
     embedding_size: int = 128
     hidden_size: int = 512
