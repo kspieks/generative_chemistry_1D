@@ -99,5 +99,9 @@ def create_vocabulary(smiles_list):
     for smi in smiles_list:
         token_list = tokenizer.tokenize(smi)
         vocab_tokens.update(token_list)
+
+    # ensure that all numbers are in vocabulary
+    numbers = [str(i) for i in range(0, 10)]
+    vocab_tokens.update(numbers)
     
     return vocab_tokens
