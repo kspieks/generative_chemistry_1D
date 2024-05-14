@@ -127,6 +127,6 @@ def clean_smiles(df,
     print('\nRemoving stereochemistry from all SMILES')
     print(f'Only unique InChI keys will be kept i.e., removing {num_duplicated} compounds that appear multiple times')
     df = df.drop_duplicates(subset='inchi_key')
-    print(f'Final cleaned file has {len(df)} rows')
+    print(f'Final cleaned file has {len(df)} rows\n')
     
     return df

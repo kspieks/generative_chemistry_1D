@@ -83,7 +83,7 @@ def train_rf(df,
 
         # save the extended model
         pkl_file = os.path.join(save_dir, f'rf_{target}.pkl')
-        print(f'Saving the RF model to {pkl_file}')
+        print(f'Saving the RF model to {pkl_file}\n')
         with open(pkl_file, 'wb') as f:
             pkl.dump(rf_model, f)
     
