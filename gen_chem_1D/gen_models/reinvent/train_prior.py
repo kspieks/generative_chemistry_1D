@@ -92,19 +92,22 @@ def train_prior(gen_prior_args):
                 tqdm.write("*" * 50 + "\n")
                 if percent_valid > best_percent_valid:
                     best_percent_valid = percent_valid
-                    # save the checkpoint for the best model i.e., generates the highest percentage of valid SMILES
-                    # delete the worst model from the list of best models
+                    # remove the earliest model from the list of best models
                     if len(save_paths) >= gen_prior_args.save_limit:
                         path_to_delete = save_paths.pop(0)
                         os.remove(path_to_delete)
+                    # save the checkpoint for the best model i.e., generates the highest percentage of valid SMILES
                     save_path = os.path.join(gen_prior_args.out_dir, f"Prior_epoch_{epoch}.ckpt")
                     torch.save(Prior.rnn.state_dict(), save_path)
                     save_paths.append(save_path)
 
+                    torch.save(Prior.rnn.state_dict(), os.path.join(gen_prior_args.out_dir, "Prior.ckpt"))
+
                 Prior.rnn.train()
         
-    # save the trained prior
-    torch.save(Prior.rnn.state_dict(), os.path.join(gen_prior_args.out_dir, "Prior.ckpt"))
+    # save the final trained prior
+    # to-do: should save based on number of steps since this is better than epochs for large datasets
+    torch.save(Prior.rnn.state_dict(), os.path.join(gen_prior_args.out_dir, f"Prior_epoch_{epoch}.ckpt"))
 
 
 def main():
