@@ -1,4 +1,5 @@
 import argparse
+import os
 from pprint import pprint
 
 import pandas as pd
@@ -28,6 +29,9 @@ def clean_pred_data(preprocess_data_args):
                       canonicalize=preprocess_data_args.canonicalize,
                       )
     
+    output_dir = os.path.dirname(preprocess_data_args.pred_output_file)
+    if output_dir:
+        os.makedirs(output_dir, exist_ok=True)
     df.to_csv(preprocess_data_args.pred_output_file, index=False)
 
 def main():
