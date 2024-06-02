@@ -29,14 +29,15 @@ def train_rf(df,
     for target in regression_targets:
         # remove any molecules with missing values
         df_target = df[~df[target].isna()]
+        print('*'*88)
+        print(f'{target} has {len(df_target)} data points in total')
 
         # create molecular features
+        print('Creating features...')
         X = create_features(df_target)
         y = df_target[target].values
 
         # use 80:20 time split to evaluate model performance
-        print('*'*88)
-        print(f'{target} has {len(df_target)} data points in total')
         num_train = int(0.8 * len(y))
         num_test = len(y) - num_train
         print('After splitting the data into 80% training and 20% testing, there are:')

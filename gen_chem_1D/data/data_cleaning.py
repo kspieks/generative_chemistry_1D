@@ -117,6 +117,7 @@ def clean_smiles(df,
 
     # optionally remove stereochemistry and create canonical SMILES
     if remove_stereo:
+        print('\nRemoving stereochemistry from all SMILES')
         df.SMILES = df.SMILES.apply(remove_stereochemistry, canonicalize=canonicalize)
     elif canonicalize:
         df.SMILES = df.SMILES.apply(canoncalize_smiles)
@@ -124,7 +125,6 @@ def clean_smiles(df,
     # get InChI keys and remove duplicate compounds
     df['inchi_key'] = df.SMILES.apply(lambda smi: Chem.inchi.MolToInchiKey(Chem.MolFromSmiles(smi)))
     num_duplicated = df.duplicated(subset=['inchi_key']).sum()
-    print('\nRemoving stereochemistry from all SMILES')
     print(f'Only unique InChI keys will be kept i.e., removing {num_duplicated} compounds that appear multiple times')
     df = df.drop_duplicates(subset='inchi_key')
     print(f'Final cleaned file has {len(df)} rows\n')
