@@ -97,7 +97,7 @@ def train_prior(gen_prior_args):
                         path_to_delete = save_paths.pop(0)
                         os.remove(path_to_delete)
                     # save the checkpoint for the best model i.e., generates the highest percentage of valid SMILES
-                    save_path = os.path.join(gen_prior_args.out_dir, f"Prior_epoch_{epoch}.ckpt")
+                    save_path = os.path.join(gen_prior_args.out_dir, f"Prior_epoch_{epoch}_step_{step}.ckpt")
                     torch.save(Prior.rnn.state_dict(), save_path)
                     save_paths.append(save_path)
 
@@ -107,7 +107,7 @@ def train_prior(gen_prior_args):
         
     # save the final trained prior
     # to-do: should save based on number of steps since this is better than epochs for large datasets
-    torch.save(Prior.rnn.state_dict(), os.path.join(gen_prior_args.out_dir, f"Prior_epoch_{epoch}.ckpt"))
+    torch.save(Prior.rnn.state_dict(), os.path.join(gen_prior_args.out_dir, f"Prior_epoch_{epoch}_step_{step}   .ckpt"))
 
 
 def main():
