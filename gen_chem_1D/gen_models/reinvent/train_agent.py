@@ -100,7 +100,7 @@ def train_agent(gen_bias_args):
                 param_group['lr'] *= 0.98
 
         # sample from Agent
-        seqs, _, _ = Agent.sample(batch_size=gen_bias_args.batch_size)
+        seqs, _, _ = Agent.sample(batch_size=gen_bias_args.batch_size,  max_length=gen_bias_args.max_len)
         Agent.rnn.train()
         agent_likelihood, entropy = Agent.likelihood(Variable(seqs))
         Agent.rnn.eval()

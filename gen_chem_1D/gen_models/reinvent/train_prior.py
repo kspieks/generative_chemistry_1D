@@ -79,7 +79,7 @@ def train_prior(gen_prior_args):
 
                 # test the validity of the generated smiles
                 Prior.rnn.eval()
-                seqs, likelihood, _ = Prior.sample(128)
+                seqs, likelihood, _ = Prior.sample(batch_size=128, max_length=gen_prior_args.max_len)
                 valid = 0
                 for i, seq in enumerate(seqs.cpu().numpy()):
                     smile = voc.decode(seq)

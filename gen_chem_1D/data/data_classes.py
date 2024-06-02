@@ -108,6 +108,7 @@ class GenerativePrior:
         dropout_input: dropout applied to the embeddings before input to RNN.
         dropout_hidden: dropout applied between hidden layers of RNN.
         temperature: RNN temperature, alters diversity by rescaling logits.
+        max_len: maximum sequence length that will be generated when validating the model.
     """
     vocab_file: str
     smi_path: str
@@ -126,6 +127,8 @@ class GenerativePrior:
     dropout_input: float = 0
     dropout_hidden: float = 0
     temperature: float = 1.0
+
+    max_len: int = 140
 
     def __post_init__(self):
         for field in fields(self):
@@ -162,6 +165,7 @@ class GenerativeBias:
         dropout_input: dropout applied to the embeddings before input to RNN.
         dropout_hidden: dropout applied between hidden layers of RNN.
         temperature: RNN temperature, alters diversity by rescaling logits.
+        max_len: maximum sequence length that will be generated when sampling from the model.
     """
     vocab_file: str
     prior_checkpoint_path: str
@@ -181,6 +185,8 @@ class GenerativeBias:
     dropout_input: float = 0
     dropout_hidden: float = 0
     temperature: float = 1.0
+
+    max_len: int = 140
 
     def __post_init__(self):
         self.init_lr = float(self.init_lr)
