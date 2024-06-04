@@ -95,6 +95,7 @@ class CalcProp(ConvertScore):
                 num_aromatic_rings = 0
                 for ring_bonds in mol.GetRingInfo().BondRings():
                     num_aromatic_rings += is_ring_aromatic(mol, ring_bonds)
+                return num_aromatic_rings
             
             self.func = get_num_aromatic_rings
 
@@ -136,7 +137,7 @@ class MultiScore():
         scorers=[]
         names = []
         for sf, params in scoring_functions.items():
-            if sf.lower() in ['mw', 'logp', 'hbd', 'hba', 'rotb', 'coo_counts']:
+            if sf.lower() in ['mw', 'logp', 'hbd', 'hba', 'rotb', 'coo_counts', 'num_aromatic_rings']:
                 scorers.append(CalcProp(name=sf, scale=params))
             elif sf.split('_')[0] == 'rf':
                 scorers.append(RFPredictor(**params))
