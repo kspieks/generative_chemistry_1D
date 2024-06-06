@@ -16,7 +16,7 @@ def calc_atompair_fp(smi,
                      minDistance=1,
                      maxDistance=30,
                      fpSize=1024,
-                     includeChirality=False,
+                     includeChirality=True,
                      ):
     """
     Publication: Carhart, R.E. et al. "Atom Pairs as Molecular Features in 
