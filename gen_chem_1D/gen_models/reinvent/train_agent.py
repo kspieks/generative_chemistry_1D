@@ -86,7 +86,6 @@ def train_agent(gen_bias_args):
 
     print("Model initialized, starting training...")
     best_score = 0
-    save_limit = 2
     save_paths = []
     for step in range(gen_bias_args.num_steps):
         # increase learning rate linearly from 5% to 100% of specified rate over first 20 steps
@@ -178,7 +177,7 @@ def train_agent(gen_bias_args):
             best_score = np.mean(score)
             # update the checkpoint for the best agent that satisfies the most objectives
             # delete the worst model from the list of best models
-            if len(save_paths) >= save_limit:
+            if len(save_paths) >= gen_bias_args.save_limit:
                 path_to_delete = save_paths.pop(0)
                 os.remove(path_to_delete)
             save_path = f'gen_model/biased_agent_step_{step}.ckpt'

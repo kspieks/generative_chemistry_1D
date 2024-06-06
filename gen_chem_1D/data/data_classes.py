@@ -148,6 +148,7 @@ class GenerativeBias:
         batch_size: number of sequences to sample at each iteration.
         init_lr: initial learning rate.
         reward_multiplier: factor used in calculating augmented log-likelihood.
+        save_limit: number of intermediate models to save.
         scoring_functions: dictionary with scoring function to use. Example:
             {'rf_logSolubility': 
                 {'model_path': 'pred_model/rf_lipo.pkl',
@@ -176,6 +177,7 @@ class GenerativeBias:
     batch_size: int = 64
     init_lr: float = 5e-4
     reward_multiplier: float = 80.0
+    save_limit: int = 2
 
     scoring_functions: Dict = field(default_factory=lambda: {})
     substructure_matching: Dict = field(default_factory=lambda: {})
