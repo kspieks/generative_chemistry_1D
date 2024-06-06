@@ -50,3 +50,25 @@ def calc_donorpair_fp(smi, fpSize=1024):
     nze = sparse_vec.GetNonzeroElements()
 
     return _hash_fold(nze, fpSize)
+
+
+# https://www.rdkit.org/docs/source/rdkit.Chem.rdMolDescriptors.html#rdkit.Chem.rdMolDescriptors.GetHashedMorganFingerprint
+# https://www.rdkit.org/docs/source/rdkit.Chem.rdFingerprintGenerator.html#rdkit.Chem.rdFingerprintGenerator.GetMorganGenerator
+def calc_morgan_fp(smi,
+                   count=True,
+                   radius=3,
+                   fpSize=2048,
+                   includeChirality=True,
+                   ):
+    """Extended Connectivity Fingerprint (MorganFingerprint from RDKit)"""
+    mol = Chem.MolFromSmiles(smi)
+    morgan_gen = rdFingerprintGenerator.GetMorganGenerator(
+        radius=radius,
+        fpSize=fpSize,
+        includeChirality=includeChirality,
+    )
+    fp = getattr(morgan_gen,
+                 f'Get{"Count" if count else ""}Fingerprint'
+                 )(mol)
+
+    return rdkit_to_np(fp, fpSize)

@@ -234,3 +234,24 @@ class GenerativeSample:
     dropout_input: float = 0
     dropout_hidden: float = 0
     temperature: float = 1.0
+
+
+@dataclass
+class Postprocess:
+    """
+    Class to store settings for postprocessing the generated SMILES.
+
+    Args:
+        input_files: list of csv file(s) containing generated SMILES.
+        output_file: path to write the postprocessed SMILES to.
+        neutralize: boolean indicating whether to neutralize the generated SMILES.
+        add_Gnum: boolean indicating whether to add a generated compound ID in the format G-xxxxxxx.
+        add_UMAP_clustering: boolean indicating whether to project the generated molecuels to two
+                             dimensions and then use K-means to cluster the data.
+    """
+    input_files: list
+    output_file: str = 'cleaned_generated_smiles.csv'
+
+    neutralize: bool = True
+    add_Gnum: bool = True
+    add_UMAP_clustering: bool = True
