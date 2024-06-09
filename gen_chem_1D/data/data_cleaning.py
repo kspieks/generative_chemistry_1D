@@ -41,7 +41,7 @@ def remove_stereochemistry(smi, canonicalize=True):
     return Chem.MolToSmiles(mol, canonical=canonicalize)
 
 
-def canoncalize_smiles(smi):
+def canonicalize_smiles(smi):
     """Canonicalize the SMILES string."""
     mol = Chem.MolFromSmiles(smi)
     return Chem.MolToSmiles(mol, canonical=True)
@@ -120,7 +120,7 @@ def clean_smiles(df,
         print('\nRemoving stereochemistry from all SMILES')
         df.SMILES = df.SMILES.apply(remove_stereochemistry, canonicalize=canonicalize)
     elif canonicalize:
-        df.SMILES = df.SMILES.apply(canoncalize_smiles)
+        df.SMILES = df.SMILES.apply(canonicalize_smiles)
 
     # get InChI keys and remove duplicate compounds
     df['inchi_key'] = df.SMILES.apply(lambda smi: Chem.inchi.MolToInchiKey(Chem.MolFromSmiles(smi)))
