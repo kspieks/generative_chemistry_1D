@@ -23,7 +23,7 @@ pip install torch torchvision torchaudio
 pip install rdkit
 
 # install other packages
-pip install jupyter scikit-learn seaborn tqdm
+pip install joblib jupyter scikit-learn seaborn tqdm
 
 # install repo in editable mode
 pip install -e .

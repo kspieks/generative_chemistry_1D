@@ -11,6 +11,7 @@ from sklearn.cluster import KMeans
 from gen_chem_1D.data.data_classes import Postprocess
 from gen_chem_1D.pred_models.features.featurizers import calc_morgan_fp
 from gen_chem_1D.utils.parsing import read_yaml_file
+from .similarity import get_top_N_most_similar
 
 
 def standardize(smi):
@@ -84,17 +85,27 @@ def postprocess_data(postprocess_data_args):
         df = df.drop_duplicates(subset='inchi_key')
     
     # remove any generated smiles that are already present in the training set
-    df_train = pd.read_csv(postprocess_data_args.training_data)
+    df_train = pd.read_csv(postprocess_data_args.training_data, header=None)
+    df_train.columns = ['SMILES']
     num_overlap = len(df[df.inchi_key.isin(df_train.inchi_key.values)])
     print(f'Removing {num_overlap} generated SMILES that are already present in the training set')
     df = df[~df.inchi_key.isin(df_train.inchi_key.values)]
 
     if postprocess_data_args.add_Gnum:
+        print('Adding G-numbers...')
         df = add_G_number(df)
     
     if postprocess_data_args.add_UMAP_clustering:
+        print('Performing UMAP clustering...')
         df = calc_UMAP_clustering(df)
-    
+
+    if postprocess_data_args.calc_top_N_most_similar:
+        print('Calculating similarity w.r.t. closest training molecules...')
+        df = get_top_N_most_similar(df, df_train,
+                                    top_N=postprocess_data_args.top_N,
+                                    ncpus=postprocess_data_args.num_cpus,
+                                    )
+
     df.to_csv(postprocess_data_args.output_file, index=False)
 
 

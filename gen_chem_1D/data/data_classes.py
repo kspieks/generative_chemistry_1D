@@ -244,14 +244,22 @@ class Postprocess:
     Args:
         input_files: list of csv file(s) containing generated SMILES.
         output_file: path to write the postprocessed SMILES to.
+        training_data: path to text file containing the training SMILES.
         neutralize: boolean indicating whether to neutralize the generated SMILES.
         add_Gnum: boolean indicating whether to add a generated compound ID in the format G-xxxxxxx.
         add_UMAP_clustering: boolean indicating whether to project the generated molecuels to two
                              dimensions and then use K-means to cluster the data.
+        calc_top_N_most_similar: boolean indicating whether to identify the top N most similar SMILES
+                                 from the training set based on Tanimoto similarity.
+        top_N: integer specifying how many training set matches to return for each generated SMILES.
     """
     input_files: list
     output_file: str = 'cleaned_generated_smiles.csv'
 
+    training_data: str = 'cleaned_mols.smi'
+
     neutralize: bool = True
     add_Gnum: bool = True
     add_UMAP_clustering: bool = True
+    calc_top_N_most_similar: bool = True
+    top_N: int = 3
