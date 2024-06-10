@@ -1,6 +1,8 @@
 # 1D Generative Modeling for Chemistry
 The goal of this repo is to utilize generative modeling techniques to create SMILES strings of molecules. Property prediction models can be used to push the generative models into a better property space. Currently, the repo supports REINVENT as the generative model, but any token-based SMILES generator could also be implemented.
 
+Todo: add support for more expressive predictive models (e.g., Chemprop)
+
 ## Pip installation instructions
 As of April 2024, the [PyTorch](https://pytorch.org/get-started/locally/) website has the following statements:
 - "PyTorch is supported on macOS 10.15 (Catalina) or above."
