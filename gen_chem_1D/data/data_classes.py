@@ -73,7 +73,7 @@ class PredictiveModel:
     input_file: str
     regression_targets: List[str]
     model: str
-    hyperparameters: Dict = field(default_factory=lambda: dict)
+    hyperparameters: Dict = field(default_factory=lambda: {})
     save_dir: str = 'pred_model'
 
     def __post_init__(self):
