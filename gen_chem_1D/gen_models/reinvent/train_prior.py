@@ -69,6 +69,8 @@ def train_prior(gen_prior_args):
             # calculate gradients and take a step
             optimizer.zero_grad()
             loss.backward()
+            # optionally clip the gradients for stability before taking a step
+            # torch.nn.utils.clip_grad_value_(Prior.rnn.parameters(), 5)
             optimizer.step()
 
             # every N steps, decrease learning rate and print information about model validation

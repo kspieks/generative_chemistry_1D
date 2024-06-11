@@ -153,6 +153,8 @@ def train_agent(gen_bias_args):
         # calculate gradients and make an update to the network weights
         optimizer.zero_grad()
         loss.backward()
+        # optionally clip the gradients for stability before taking a step
+        # torch.nn.utils.clip_grad_value_(Agent.rnn.parameters(), 5)
         optimizer.step()
 
         # convert to numpy arrays so that we can print them
