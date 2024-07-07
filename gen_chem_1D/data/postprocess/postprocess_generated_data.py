@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 import umap
 from rdkit import Chem
+from rdkit.Chem import EnumerateStereoisomers
 from rdkit.Chem.MolStandardize import rdMolStandardize
 from sklearn.cluster import KMeans
 
@@ -12,6 +13,7 @@ from gen_chem_1D.data.data_classes import Postprocess
 from gen_chem_1D.pred_models.features.featurizers import calc_morgan_fp
 from gen_chem_1D.utils.parsing import read_yaml_file
 from .similarity import get_top_N_most_similar
+from ..data_cleaning import remove_stereochemistry
 
 
 def standardize(smi):
@@ -78,11 +80,32 @@ def postprocess_data(postprocess_data_args):
     df = df.drop_duplicates(subset='inchi_key')
 
     if postprocess_data_args.neutralize:
+        print('Neutralizing SMILES...\n')
         df['SMILES_original'] = df['SMILES'].copy()
         df['SMILES'] = df['SMILES'].apply(standardize)
         # recalculate InChI keys and remove any duplicates after standardizing
         df['inchi_key'] = df.SMILES.apply(lambda smi: Chem.MolToInchiKey(Chem.MolFromSmiles(smi)))
         df = df.drop_duplicates(subset='inchi_key')
+
+    if postprocess_data_args.enumerate_stereochemistry:
+        print('Enumerating all stereoisomers...\n')
+        # must remove stereochemistry before RDKit can enumerate the stereocenters
+        df_non_chiral = df[['SMILES']].copy(deep=True)
+        df_non_chiral['SMILES'] = df_non_chiral['SMILES'].apply(remove_stereochemistry, canonicalize=True)
+        df_non_chiral = df_non_chiral.drop_duplicates(subset=['SMILES']).reset_index(drop=True)
+        
+        # takes about 20 seconds when starting from about 20,000 non chiral smiles
+        chiral_smiles = []
+        for non_chiral_smi in df_non_chiral.SMILES.values:
+            mol = Chem.MolFromSmiles(non_chiral_smi)
+            ennumerated = EnumerateStereoisomers.EnumerateStereoisomers(mol)
+            for m in list(ennumerated):
+                chiral_smiles.append(Chem.MolToSmiles(m, canonical=True))
+        
+        df = pd.DataFrame(chiral_smiles, columns=['SMILES'])
+        df['inchi_key'] = df.SMILES.apply(lambda smi: Chem.MolToInchiKey(Chem.MolFromSmiles(smi)))
+        df = df.drop_duplicates(subset='inchi_key')
+
     
     # remove any generated smiles that are already present in the training set
     df_train = pd.read_csv(postprocess_data_args.training_data, header=None)

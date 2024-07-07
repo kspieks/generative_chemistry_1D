@@ -248,6 +248,8 @@ class Postprocess:
 
         neutralize: boolean indicating whether to neutralize the generated SMILES.
         add_Gnum: boolean indicating whether to add a generated compound ID in the format G-xxxxxxx.
+        enumerate_stereochemistry: boolean indicating whether to enumerate all stereoisomers for a given molecule.
+
         add_UMAP_clustering: boolean indicating whether to project the generated molecuels to two
                              dimensions and then use K-means to cluster the data.
 
@@ -263,6 +265,7 @@ class Postprocess:
 
     neutralize: bool = True
     add_Gnum: bool = True
+    enumerate_stereochemistry: bool = True
     add_UMAP_clustering: bool = True
 
     calc_top_N_most_similar: bool = True
