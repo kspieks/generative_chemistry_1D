@@ -4,7 +4,7 @@ from pprint import pprint
 import numpy as np
 import pandas as pd
 import umap
-from rdkit import Chem
+from rdkit import Chem, RDLogger
 from rdkit.Chem import EnumerateStereoisomers
 from rdkit.Chem.MolStandardize import rdMolStandardize
 from sklearn.cluster import KMeans
@@ -12,9 +12,12 @@ from sklearn.cluster import KMeans
 from gen_chem_1D.data.data_classes import Postprocess
 from gen_chem_1D.pred_models.features.featurizers import calc_morgan_fp
 from gen_chem_1D.utils.parsing import read_yaml_file
-from .similarity import get_top_N_most_similar
-from ..data_cleaning import remove_stereochemistry
 
+from ..data_cleaning import remove_stereochemistry
+from .similarity import get_top_N_most_similar
+
+lg = RDLogger.logger()
+lg.setLevel(RDLogger.ERROR)
 
 def standardize(smi):
     """Clean up SMILES string by neutralizing charges."""
