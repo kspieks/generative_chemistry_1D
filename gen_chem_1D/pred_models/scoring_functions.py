@@ -125,7 +125,7 @@ class MultiScore():
         scorers=[]
         names = []
         for sf, params in scoring_functions.items():
-            if sf.lower() in ['mw', 'logp', 'hbd', 'hba', 'rotb', 'coo_counts', 'num_aromatic_rings']:
+            if sf.lower() in ['mw', 'tpsa', 'logp', 'hbd', 'hba', 'rotb', 'fracsp3', 'coo_counts', 'num_aromatic_rings']:
                 scorers.append(CalcProp(name=sf, scale=params))
             elif sf.split('_')[0] == 'rf':
                 scorers.append(RFPredictor(**params))
