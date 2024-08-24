@@ -1,0 +1,57 @@
+preprocess_data:
+    pred_input_file: data/lipo.csv
+    pred_output_file: data/lipo_cleaned.csv
+
+    gen_input_file: data/lipo.csv
+    gen_output_file: gen_model/lipo_cleaned.smi
+    gen_vocab_file: gen_model/vocab.txt
+
+    min_heavy_atoms: 5
+    max_heavy_atoms: 70
+    supported_elements: ['H',
+                         'B', 'C', 'N', 'O', 'F',
+                         'P', 'S', 'Cl',
+                         'Br', 'I',
+                        ]
+
+pred_model:
+    # provide one file containing cleaned SMILES and all regression targets
+    input_file: data/lipo_cleaned.csv
+    regression_targets: [lipo]
+    save_dir: pred_models
+
+    # currently, random forest is the only supported regression model
+    model: random_forest
+    # optionally provide hyperparameters to the predictive model
+    hyperparameters:
+        n_estimators: 100
+        max_depth: 20
+        random_state: 42
+
+gen_model:
+    pre_train:
+        # provide one file containing cleaned SMILES
+        smi_path: gen_model/lipo_cleaned.smi
+        vocab_file: gen_model/vocab.txt
+        out_dir: gen_model
+
+        num_epochs: 20
+        init_lr: 1e-3
+        batch_size: 64
+
+    sample:
+        checkpoint_path: gen_model/Prior.ckpt
+        vocab_file: gen_model/vocab.txt
+
+        batch_size: 128
+        num_smiles: 2000
+        max_len: 120
+        output_file: gen_model/generated_smiles_prior.csv
+
+        pred_models:
+            lipo: 
+                model: random_forest
+                path: pred_models/rf_lipo.pkl
+
+        # todo: should add support for calculators too
+        # calculators: ['mw']

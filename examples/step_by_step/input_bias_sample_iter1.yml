@@ -1,0 +1,33 @@
+gen_model:
+    bias:
+        prior_checkpoint_path: gen_model/Prior.ckpt
+        agent_checkpoint_path: gen_model/Prior.ckpt
+        vocab_file: gen_model/vocab.txt
+        
+        agent_save_path: gen_model/Agent_iter1.ckpt
+
+        batch_size: 64
+        init_lr: 0.0006
+        num_steps: 20
+        reward_multiplier: 80
+
+        scoring_functions:
+            rf_lipo:
+                model_path: pred_models/rf_lipo.pkl
+                # acceptable value, worst, best. this maximizes
+                scale: [-1.50, -1.51, 4.50]
+
+    sample:
+        checkpoint_path: gen_model/Agent_iter1.ckpt
+        vocab_file: gen_model/vocab.txt
+        output_file: gen_model/generated_smiles_agent1.csv
+
+        batch_size: 128
+        num_smiles: 2000
+        max_len: 120        
+        
+        pred_models:
+            # must match the column names from regression_targets above
+            lipo: 
+                model: random_forest
+                path: pred_models/rf_lipo.pkl
