@@ -1,6 +1,7 @@
 #!/usr/bin/env python
-import pickle as pkl
+import os
 
+import pandas as pd
 import numpy as np
 from rdkit import Chem
 from rdkit.Chem import Descriptors

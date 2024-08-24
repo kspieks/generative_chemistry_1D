@@ -109,7 +109,7 @@ def train_prior(gen_prior_args):
         
     # save the final trained prior
     # to-do: should save based on number of steps since this is better than epochs for large datasets
-    torch.save(Prior.rnn.state_dict(), os.path.join(gen_prior_args.out_dir, f"Prior_epoch_{epoch}_step_{step}   .ckpt"))
+    torch.save(Prior.rnn.state_dict(), os.path.join(gen_prior_args.out_dir, f"Prior_epoch_{epoch}_step_{step}.ckpt"))
 
 
 def main():
