@@ -47,7 +47,7 @@ def main():
     # sample from the generative model before biasing
     gen_sample_args = GenerativeSample(**yaml_dict['gen_model']['sample'])
     gen_sample_args.checkpoint_path = 'gen_model/Prior.ckpt'
-    gen_sample_args.output_file = 'gen_model/unbiased_generated_smiles.csv'
+    gen_sample_args.output_file = 'gen_model/generated_smiles_prior.csv'
     sample(gen_sample_args)
 
 
@@ -57,7 +57,8 @@ def main():
 
     # sample from the biased generative model
     gen_sample_args.checkpoint_path = 'gen_model/Agent.ckpt'
-    gen_sample_args.output_file = 'gen_model/biased_generated_smiles.csv'
+    gen_sample_args.output_file = 'gen_model/generated_smiles_agent.csv'
+    gen_sample_args.num_smiles = 500
     sample(gen_sample_args)
 
 if __name__ == "__main__":

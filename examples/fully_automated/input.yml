@@ -1,0 +1,79 @@
+preprocess_data:
+    pred_input_file: data/esol.csv
+    pred_output_file: data/esol_cleaned.csv
+
+    gen_input_file: data/esol.csv
+    gen_output_file: gen_model/esol_cleaned.smi
+    gen_vocab_file: gen_model/vocab.txt
+
+    min_heavy_atoms: 5
+    max_heavy_atoms: 50
+    supported_elements: ['H',
+                         'B', 'C', 'N', 'O', 'F',
+                         'P', 'S', 'Cl',
+                         'Br', 'I',
+                        ]
+
+pred_model:
+    # provide one file containing cleaned SMILES and all regression targets
+    input_file: data/esol_cleaned.csv
+    regression_targets: [logSolubility]
+    save_dir: pred_models
+
+    model: random_forest
+    # optionally provide hyperparameters to the predictive model
+    hyperparameters:
+        n_estimators: 100
+        max_depth: 20
+        random_state: 42
+
+gen_model:
+    pre_train:
+        # provide one file containing cleaned SMILES
+        smi_path: gen_model/esol_cleaned.smi
+        vocab_file: gen_model/vocab.txt
+        out_dir: gen_model
+
+        num_epochs: 20
+        init_lr: 1e-3
+        batch_size: 64
+
+    bias:
+        prior_checkpoint_path: gen_model/Prior.ckpt
+        agent_checkpoint_path: gen_model/Prior.ckpt
+        vocab_file: gen_model/vocab.txt
+
+        agent_save_path: gen_model/Agent.ckpt
+
+        batch_size: 64
+        init_lr: 0.0006
+        num_steps: 20
+        reward_multiplier: 80
+
+        scoring_functions:
+            rf_lipo:
+                model_path: pred_models/rf_logSolubility.pkl
+                # acceptable value, worst, best. this maximizes
+                scale: [-11.6, -11.5, 1.60]
+
+            # acceptable low, acceptable high, min value, max value
+            mw: [200, 300, 100, 400]
+
+        substructure_matching:
+            smiles:
+                # arbitrarily apply small penalty for 2-pyrrolidinone
+                'O=C1CCCN1': -0.2
+
+    sample:
+        checkpoint_path: gen_model/Prior.ckpt
+        vocab_file: gen_model/vocab.txt
+
+        batch_size: 128
+        num_smiles: 1000
+        max_len: 100
+        output_file: gen_model/generated_smiles_prior.csv
+
+        pred_models:
+            logSolubility: 
+                model: random_forest
+                path: pred_models/rf_logSolubility.pkl
