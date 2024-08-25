@@ -37,6 +37,7 @@ gen_model:
         num_smiles: 200
         max_len: 120
         
+        # this modifies one of the existing scaffolds within ESOL: CCOc1cc(Nc2nc3c(cc2F)ncn3C(CO)c2ccc(F)cn2)n[nH]1
         scaffold_constraint: 'CCOc1cc(Nc2nc3c(cc2F)ncn3C(*)c2ccc(*)cn2)n[nH]1'
 
         pred_models:

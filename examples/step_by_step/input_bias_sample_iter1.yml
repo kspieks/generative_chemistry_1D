@@ -15,7 +15,7 @@ gen_model:
             rf_lipo:
                 model_path: pred_models/rf_lipo.pkl
                 # acceptable value, worst, best. this maximizes
-                scale: [-1.50, -1.51, 4.50]
+                scale: [-1.51, -1.50, 4.50]
 
     sample:
         checkpoint_path: gen_model/Agent_iter1.ckpt
