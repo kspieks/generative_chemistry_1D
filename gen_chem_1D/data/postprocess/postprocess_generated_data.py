@@ -29,6 +29,23 @@ def standardize(smi):
     return Chem.MolToSmiles(uncharged_parent_clean_mol)
 
 
+def convert_to_standard_isotope(smi):
+    """
+    Sometimes REINVENT generates non-standard isotopes even if there were no examples
+    in the training set. This function will convert atoms back to their standard
+    isotopes e.g., [13C] to C or [2H] to H.
+    http://www.rdkit.org/new_docs/Cookbook.html#isomeric-smiles-without-isotopes
+    """
+    mol = Chem.MolFromSmiles(smi)
+    atom_data = [(atom, atom.GetIsotope()) for atom in mol.GetAtoms()]
+    for atom, isotope in atom_data:
+        # restore standard isotope values
+        if isotope:
+            atom.SetIsotope(0)
+   smiles = Chem.MolToSmiles(mol)
+   return smiles
+
+
 def add_G_number(df):
     """Assigns a compound ID to the generated molecules with the format of G-xxxxxxx."""
     df.insert(2, 'Compound_ID', [f'G-{i:07}' for i in range(len(df))])
@@ -81,6 +98,10 @@ def postprocess_data(postprocess_data_args):
 
     # remove any duplicates
     df = df.drop_duplicates(subset='inchi_key')
+
+    if postprocess_data_args.convert_to_standard_isotope:
+        print('Converting any atoms to their standard isotopes...\n')
+        df['SMILES'] = df['SMILES'].apply(convert_to_standard_isotope)
 
     if postprocess_data_args.neutralize:
         print('Neutralizing SMILES...\n')

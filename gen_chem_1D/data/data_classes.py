@@ -246,6 +246,8 @@ class Postprocess:
         output_file: path to write the postprocessed SMILES to.
         training_data: path to text file containing the training SMILES.
 
+        convert_to_standard_isotope: boolean indicating whether to convert atoms to their standard isotopes.
+                                     e.g., [13C] to C or [2H] to H.
         neutralize: boolean indicating whether to neutralize the generated SMILES.
         add_Gnum: boolean indicating whether to add a generated compound ID in the format G-xxxxxxx.
         enumerate_stereochemistry: boolean indicating whether to enumerate all stereoisomers for a given molecule.
@@ -263,6 +265,7 @@ class Postprocess:
 
     training_data: str = 'cleaned_mols.smi'
 
+    convert_to_standard_isotope: bool = True
     neutralize: bool = True
     add_Gnum: bool = True
     enumerate_stereochemistry: bool = True
