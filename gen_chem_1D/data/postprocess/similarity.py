@@ -79,6 +79,6 @@ def get_top_N_most_similar(df_gen, df_train, top_N=3, ncpus=1):
     # put the training smiles and corresponding similarity in the generated df
     for i in range(top_N):
         df_gen[f'match{i+1}_smi'] = smi_dict[f'match{i+1}_smi']
-        df_gen[f'match{i+1}_sim'] = smi_dict[f'match{i+1}_sim']
+        df_gen[f'match{i+1}_sim'] = sim_dict[f'match{i+1}_sim']
 
     return df_gen

@@ -42,8 +42,8 @@ def convert_to_standard_isotope(smi):
         # restore standard isotope values
         if isotope:
             atom.SetIsotope(0)
-   smiles = Chem.MolToSmiles(mol)
-   return smiles
+    smiles = Chem.MolToSmiles(mol)
+    return smiles
 
 
 def add_G_number(df):
@@ -134,6 +134,7 @@ def postprocess_data(postprocess_data_args):
     # remove any generated smiles that are already present in the training set
     df_train = pd.read_csv(postprocess_data_args.training_data, header=None)
     df_train.columns = ['SMILES']
+    df_train['inchi_key'] = df_train.SMILES.apply(lambda smi: Chem.MolToInchiKey(Chem.MolFromSmiles(smi)))
     num_overlap = len(df[df.inchi_key.isin(df_train.inchi_key.values)])
     print(f'Removing {num_overlap} generated SMILES that are already present in the training set')
     df = df[~df.inchi_key.isin(df_train.inchi_key.values)]
