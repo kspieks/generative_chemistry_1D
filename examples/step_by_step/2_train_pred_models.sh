@@ -2,7 +2,7 @@
 
 start_time=$(date +%s)
 
-GEN_CHEM_1D=../../../generative_chemistry_1D
+GEN_CHEM_1D=../..
 
 which python
 
