@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gen_chem_1D"
+version = "0.1.0"
+description = "Generative models create SMILES strings, and predictive models bias the generators towards better molecular properties."
+readme = "README.md"
+authors = [{ name = "Kevin Spiekermann" }]
+requires-python = ">=3.12"
+dependencies = [
+    "joblib>=1.6",
+    "numpy>=2.5",
+    "pandas>=3.1",
+    "pyyaml>=6.0",
+    "rdkit>=2026.9",
+    "scikit-learn>=1.9",
+    "scipy>=1.18",
+    "torch>=2.15",
+    "tqdm>=4.70",
+    "umap-learn>=0.6",
+]
+
+[project.urls]
+source = "https://github.com/kspieks/generative_chemistry_1D"
+
+[dependency-groups]
+# Extra packages needed only to run the notebooks
+notebooks = [
+    "ipykernel>=7.4",
+    "jupyterlab>=4.6",
+    "matplotlib>=3.11",
+    "notebook>=7.6",
+    "seaborn>=0.13",
+]
+
+[tool.setuptools.packages.find]
+include = ["gen_chem_1D*"]
+
+[tool.uv]
+# Use a uv-managed Python, not one from Anaconda or the system
+python-preference = "only-managed"
+default-groups = ["notebooks"]
