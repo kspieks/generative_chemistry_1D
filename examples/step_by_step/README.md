@@ -12,7 +12,7 @@ This is helpful when deciding what settings to specify within `input.yml`.
 
 ### Step 1: Preprocess Data for Predictive Modeling
 ```
-bash 1_preprocess_pred_data.sh
+uv run bash 1_preprocess_pred_data.sh
 ```
 This step expects a csv file as input.
 The file should contain SMILES strings in a `SMILES` column as well as columns for the regression target(s) of interest;
@@ -26,7 +26,7 @@ All SMILES are canonicalized.
 
 ### Step 2: Train Predictive Models
 ```
-bash 2_train_pred_models.sh
+uv run bash 2_train_pred_models.sh
 ```
 Trains a predictive model using the data that was cleaned in the previous step.
 Default hyperparameters are used and a random seed is specified for reproducability.
@@ -39,7 +39,7 @@ The saved model can be called to score the generated molecules when sampling and
 
 ### Step 3: Proprocess Data for Generative Modeling
 ```
-bash 3_preprocess_gen_data.sh
+uv run bash 3_preprocess_gen_data.sh
 ```
 This step expects a csv file as input that contains SMILES strings in a `SMILES` column.
 The same preprocessing steps are applied as in step 1.
@@ -47,13 +47,13 @@ This consistency is important so that the generative models generate SMILES in a
 
 ### Step 4: Train a Generative Prior
 ```
-bash 4_train_gen_prior.sh
+uv run bash 4_train_gen_prior.sh
 ```
 Pretrains a generative model using the cleaned SMILES from the previous step.
 
 ### Step 5: Sample from the Generative Prior
 ```
-bash 5_sample_gen_prior.sh
+uv run bash 5_sample_gen_prior.sh
 ```
 Samples from the generative prior trained in the previous step.
 Generated SMILES are automatically check for validity.
@@ -67,7 +67,7 @@ Lastly, we can optionally apply a scaffold-constraint during the generation proc
 
 ### Step 6: Bias the Generative Prior towards One Endpoint
 ```
-bash 6_bias_gen_prior_iter1.sh
+uv run bash 6_bias_gen_prior_iter1.sh
 ```
 This step serves as a positive control to verify that everything is working properly i.e., the generative model can be biased.
 This toy example applies a unidirectional bias to maximize logD. 
@@ -82,14 +82,14 @@ This will be explored in the next round of biasing.
 
 ### Step 7: Sample from the Biased Model
 ```
-bash 7_sample_gen_agent1.sh
+uv run bash 7_sample_gen_agent1.sh
 ```
 Samples generated SMILES from the model fine-tuned in the previosu step.
 
 
 ### Step 8: Bias the Generative Prior with Multiple Constraints
 ```
-bash 8_bias_gen_prior_iter2.sh
+uv run bash 8_bias_gen_prior_iter2.sh
 ```
 Now that we've confirmed the workflow can successfully bias the generative model, let's do a slightly 
 more realistic example that biases towards a sweet spot for logD and also enforces a molecular weight constraint via
@@ -114,7 +114,7 @@ substructure_matching:
 
 ### Step 9: Sample from the Biased Model
 ```
-bash 9_sample_gen_agent2.sh
+uv run bash 9_sample_gen_agent2.sh
 ```
 Samples generated SMILES from the model fine-tuned in the previous step.
 A substructure constraint is applied during sampling:

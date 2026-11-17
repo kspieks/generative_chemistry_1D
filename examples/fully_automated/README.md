@@ -9,5 +9,5 @@ This is helpful when deciding what settings to specify within `input.yml`.
 can be chained together to create a convenient and automated workflow. 
 Use the following command to run this example:
 ```
-bash run_fully_automated.sh
+uv run bash run_fully_automated.sh
 ```
