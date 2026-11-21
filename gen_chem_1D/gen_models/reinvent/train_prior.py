@@ -56,7 +56,7 @@ def train_prior(gen_prior_args):
     optimizer = torch.optim.Adam(Prior.rnn.parameters(), lr=gen_prior_args.init_lr)
     save_paths = []
     best_percent_valid = 0
-    for epoch in range(1, gen_prior_args.num_epochs):
+    for epoch in range(1, gen_prior_args.num_epochs + 1):
         print(f'Epoch: {epoch}')
         for step, batch in tqdm(enumerate(data), total=len(data)):
             # sample from DataLoader
