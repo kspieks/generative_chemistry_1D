@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import umap
 from rdkit import Chem, RDLogger
-from rdkit.Chem import EnumerateStereoisomers
+from rdkit.Chem import EnumerateStereoisomers, inchi
 from rdkit.Chem.MolStandardize import rdMolStandardize
 from sklearn.cluster import KMeans
 
@@ -108,7 +108,7 @@ def postprocess_data(postprocess_data_args):
         df['SMILES_original'] = df['SMILES'].copy()
         df['SMILES'] = df['SMILES'].apply(standardize)
         # recalculate InChI keys and remove any duplicates after standardizing
-        df['inchi_key'] = df.SMILES.apply(lambda smi: Chem.MolToInchiKey(Chem.MolFromSmiles(smi)))
+        df['inchi_key'] = df.SMILES.apply(lambda smi: inchi.MolToInchiKey(Chem.MolFromSmiles(smi)))
         df = df.drop_duplicates(subset='inchi_key')
 
     if postprocess_data_args.enumerate_stereochemistry:
@@ -127,14 +127,14 @@ def postprocess_data(postprocess_data_args):
                 chiral_smiles.append(Chem.MolToSmiles(m, canonical=True))
         
         df = pd.DataFrame(chiral_smiles, columns=['SMILES'])
-        df['inchi_key'] = df.SMILES.apply(lambda smi: Chem.MolToInchiKey(Chem.MolFromSmiles(smi)))
+        df['inchi_key'] = df.SMILES.apply(lambda smi: inchi.MolToInchiKey(Chem.MolFromSmiles(smi)))
         df = df.drop_duplicates(subset='inchi_key')
 
     
     # remove any generated smiles that are already present in the training set
     df_train = pd.read_csv(postprocess_data_args.training_data, header=None)
     df_train.columns = ['SMILES']
-    df_train['inchi_key'] = df_train.SMILES.apply(lambda smi: Chem.MolToInchiKey(Chem.MolFromSmiles(smi)))
+    df_train['inchi_key'] = df_train.SMILES.apply(lambda smi: inchi.MolToInchiKey(Chem.MolFromSmiles(smi)))
     num_overlap = len(df[df.inchi_key.isin(df_train.inchi_key.values)])
     print(f'Removing {num_overlap} generated SMILES that are already present in the training set')
     df = df[~df.inchi_key.isin(df_train.inchi_key.values)]

@@ -2,6 +2,7 @@
 import numpy as np
 import pandas as pd
 from rdkit import Chem
+from rdkit.Chem import inchi
 import torch
 
 
@@ -52,7 +53,7 @@ def validate_smiles(smiles_list):
             mol = Chem.MolFromSmiles(smi)
             if mol:
                 valid_smiles.append(Chem.MolToSmiles(mol))
-                inchikeys.append(Chem.inchi.MolToInchiKey(mol))
+                inchikeys.append(inchi.MolToInchiKey(mol))
         except:
             pass
     return valid_smiles, inchikeys
@@ -66,7 +67,7 @@ def get_valid_unique_smiles_idx(smiles):
         mol = Chem.MolFromSmiles(s)
         if mol:
             canonical_smiles.append(Chem.MolToSmiles(mol, canonical=True))
-            inchi_keys.append(Chem.inchi.MolToInchiKey(mol))
+            inchi_keys.append(inchi.MolToInchiKey(mol))
         else:
             canonical_smiles.append('')
             inchi_keys.append('')

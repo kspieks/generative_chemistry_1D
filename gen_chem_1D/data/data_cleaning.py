@@ -1,6 +1,7 @@
 """Functions to clean and filter SMILES during data preprocessing."""
 import numpy as np
 from rdkit import Chem
+from rdkit.Chem import inchi
 
 from .data_classes import MIN_HEAVY_ATOMS, MAX_HEAVY_ATOMS, SUPPORTED_ELEMENTS
 
@@ -123,7 +124,7 @@ def clean_smiles(df,
         df.SMILES = df.SMILES.apply(canonicalize_smiles)
 
     # get InChI keys and remove duplicate compounds
-    df['inchi_key'] = df.SMILES.apply(lambda smi: Chem.inchi.MolToInchiKey(Chem.MolFromSmiles(smi)))
+    df['inchi_key'] = df.SMILES.apply(lambda smi: inchi.MolToInchiKey(Chem.MolFromSmiles(smi)))
     num_duplicated = df.duplicated(subset=['inchi_key']).sum()
     print(f'Only unique InChI keys will be kept i.e., removing {num_duplicated} compounds that appear multiple times')
     df = df.drop_duplicates(subset='inchi_key')
