@@ -165,7 +165,8 @@ class MultiScore():
         scalar_scores = (scalar_scores - np.min(scalar_scores)) / (np.max(scalar_scores) - np.min(scalar_scores))
 
         #return np.sum(scores*weights, axis=1), frac
-        return scalar_scores, frac
+        # float32 like the network and like the scorers of the REINVENT packages
+        return scalar_scores.astype(np.float32), frac
 
 
 class Scorer():

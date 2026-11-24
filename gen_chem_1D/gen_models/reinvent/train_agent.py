@@ -129,7 +129,8 @@ def train_agent(gen_bias_args):
             score = score * (1 + np.sum(ss_frac * score_sub, axis=1))
 
         # calculate augmented likelihood and loss
-        augmented_likelihood = prior_likelihood + gen_bias_args.reward_multiplier * Variable(score)
+        # the reward takes the dtype and device of the network output, as in REINVENT4
+        augmented_likelihood = prior_likelihood + gen_bias_args.reward_multiplier * torch.from_numpy(score).to(prior_likelihood)
         loss = torch.pow((augmented_likelihood - agent_likelihood), 2)
 
         # add new experience
