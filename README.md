@@ -54,9 +54,21 @@ To run `python` without the `uv run` prefix, activate the environment once per t
 source .venv/bin/activate
 ```
 
-PyTorch comes from PyPI. The code moves the models to a GPU when `torch.cuda.is_available()`
-and otherwise runs on the CPU. It does not use Apple's MPS backend, so on a Mac everything
-runs on the CPU.
+PyTorch comes from PyPI. The models run on CUDA if available and otherwise on the CPU. To force
+a device, set `GEN_CHEM_1D_DEVICE` to `cpu`, `cuda`, or `mps` (Apple GPU):
+
+```bash
+GEN_CHEM_1D_DEVICE=mps uv run bash run_fully_automated.sh
+```
+
+MPS is never chosen automatically. It trains the prior 2.5x faster per epoch (2.5 s vs 6.4 s) and
+runs the fully automated example 1.2x faster (145 s vs 178 s), but scaffold-constrained sampling is
+6x slower (546 s vs 90 s). MPS also lacks float64, and PyTorch may lack some MPS
+operators (`PYTORCH_ENABLE_MPS_FALLBACK=1` runs those on the CPU).
+
+The models run in float32, PyTorch's default, and the reward follows the network dtype. In a test, a
+float64 network took about 3x longer (fully automated example on the CPU: 794 s vs 257 s) and showed
+no detectable difference in the generated molecules.
 
 ## Workflow
 

@@ -13,7 +13,7 @@ from gen_chem_1D.data.data_classes import GenerativePrior
 from gen_chem_1D.gen_models.reinvent.data import MolData
 from gen_chem_1D.gen_models.reinvent.model import RNN
 from gen_chem_1D.gen_models.reinvent.tokenization import Vocabulary
-from gen_chem_1D.gen_models.reinvent.utils import decrease_learning_rate
+from gen_chem_1D.gen_models.reinvent.utils import decrease_learning_rate, get_device
 from gen_chem_1D.utils.parsing import read_yaml_file
 
 
@@ -41,9 +41,11 @@ def train_prior(gen_prior_args):
                 temperature=gen_prior_args.temperature,
                 )
 
+    print(f'Using device: {get_device()}')
+
     # optionally restore and continue training an RNN
     if gen_prior_args.checkpoint_path:
-        Prior.rnn.load_state_dict(torch.load(gen_prior_args.checkpoint_path))
+        Prior.rnn.load_state_dict(torch.load(gen_prior_args.checkpoint_path, map_location=get_device()))
     
     # set model to train mode
     Prior.rnn.train()

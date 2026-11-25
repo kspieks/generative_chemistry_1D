@@ -6,7 +6,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from .tokenization import Vocabulary
-from .utils import Variable
+from .utils import Variable, get_device
 
 
 class MultiGRU(nn.Module):
@@ -72,8 +72,7 @@ class RNN():
                             dropout_input=dropout_input,
                             dropout_hidden=dropout_hidden,
                             )
-        if torch.cuda.is_available():
-            self.rnn.cuda()
+        self.rnn.to(get_device())
         self.voc = voc
         self.temperature = temperature
 
@@ -128,8 +127,7 @@ class RNN():
         log_probs = Variable(torch.zeros(batch_size))
         finished = torch.zeros(batch_size).byte()
         entropy = Variable(torch.zeros(batch_size))
-        if torch.cuda.is_available():
-            finished = finished.cuda()
+        finished = finished.to(get_device())
 
         for step in range(max_length):
             logits, h = self.rnn(x, h)
@@ -168,8 +166,7 @@ class ScaffoldConstrainedRNN():
                             dropout_input=dropout_input,
                             dropout_hidden=dropout_hidden,
                             )
-        if torch.cuda.is_available():
-            self.rnn.cuda()
+        self.rnn.to(get_device())
         self.voc = voc
         self.temperature = temperature
     
@@ -234,8 +231,7 @@ class ScaffoldConstrainedRNN():
         finished = torch.zeros(batch_size).byte()
         entropy = Variable(torch.zeros(batch_size))
 
-        if torch.cuda.is_available():
-            finished = finished.cuda()
+        finished = finished.to(get_device())
         
         # tracks if there is an opened parenthesis
         opened = np.array(np.zeros(shape=batch_size), dtype=bool)
@@ -402,10 +398,7 @@ def NLLLoss(inputs, targets):
         loss: (batch_size) Loss for each example
     """
 
-    if torch.cuda.is_available():
-        target_expanded = torch.zeros(inputs.size()).cuda()
-    else:
-        target_expanded = torch.zeros(inputs.size())
+    target_expanded = torch.zeros(inputs.size(), device=inputs.device)
 
     target_expanded.scatter_(1, targets.contiguous().view(-1, 1).data, 1.0)
     loss = Variable(target_expanded) * inputs

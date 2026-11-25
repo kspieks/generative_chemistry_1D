@@ -11,7 +11,7 @@ import torch
 from gen_chem_1D.data.data_classes import GenerativeSample
 from gen_chem_1D.gen_models.reinvent.model import RNN, ScaffoldConstrainedRNN
 from gen_chem_1D.gen_models.reinvent.tokenization import Vocabulary
-from gen_chem_1D.gen_models.reinvent.utils import get_unique_indices, get_valid_unique_smiles_idx, seq_to_smiles
+from gen_chem_1D.gen_models.reinvent.utils import get_device, get_unique_indices, get_valid_unique_smiles_idx, seq_to_smiles
 from gen_chem_1D.pred_models.rf_model import predict_rf
 from gen_chem_1D.utils.parsing import read_yaml_file
 
@@ -46,10 +46,8 @@ def sample(gen_sample_args):
                     )
 
     # put model on device and set to evaluation mode
-    if torch.cuda.is_available():
-        Agent.rnn.load_state_dict(torch.load(gen_sample_args.checkpoint_path))
-    else:
-        Agent.rnn.load_state_dict(torch.load(gen_sample_args.checkpoint_path, map_location=lambda storage, loc: storage))
+    print(f'Using device: {get_device()}')
+    Agent.rnn.load_state_dict(torch.load(gen_sample_args.checkpoint_path, map_location=get_device()))
     Agent.rnn.eval()
 
     # don't need gradients for sampling

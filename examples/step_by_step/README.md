@@ -124,3 +124,6 @@ scaffold_constraint: 'CCOc1cc(Nc2nc3c(cc2F)ncn3C(*)c2ccc(*)cn2)n[nH]1'
 which tells the model to only generate around the `(*)`.
 More examples of scaffold-constrained generation are shown in the example notebook
 `generative_chemistry_1D/notebooks/scaffold_constrained/sample_scaffold_constrained.ipynb`
+
+Run this step on the CPU, which is the default. Scaffold-constrained sampling loops over single
+molecules and took 546 s with `GEN_CHEM_1D_DEVICE=mps` vs 90 s on the CPU.

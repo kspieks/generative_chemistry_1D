@@ -12,7 +12,7 @@ from gen_chem_1D.data.data_classes import GenerativeBias
 from gen_chem_1D.gen_models.reinvent.data import Experience
 from gen_chem_1D.gen_models.reinvent.model import RNN
 from gen_chem_1D.gen_models.reinvent.tokenization import Vocabulary
-from gen_chem_1D.gen_models.reinvent.utils import (Variable, get_ss_score,
+from gen_chem_1D.gen_models.reinvent.utils import (Variable, get_device, get_ss_score,
                                                    get_unique_indices, seq_to_smiles,
                                                    get_valid_unique_smiles_idx)
 from gen_chem_1D.pred_models.scoring_functions import Scorer
@@ -59,13 +59,10 @@ def train_agent(gen_bias_args):
                 temperature=gen_bias_args.temperature,
                 )
 
-    # saved models are partially on the GPU, but if we don't have cuda enabled we can re-map these to the CPU
-    if torch.cuda.is_available():
-        Prior.rnn.load_state_dict(torch.load(gen_bias_args.prior_checkpoint_path))
-        Agent.rnn.load_state_dict(torch.load(gen_bias_args.agent_checkpoint_path))
-    else:
-        Prior.rnn.load_state_dict(torch.load(gen_bias_args.prior_checkpoint_path, map_location=lambda storage, loc: storage))
-        Agent.rnn.load_state_dict(torch.load(gen_bias_args.agent_checkpoint_path, map_location=lambda storage, loc: storage))
+    # map the saved weights to the current device
+    print(f'Using device: {get_device()}')
+    Prior.rnn.load_state_dict(torch.load(gen_bias_args.prior_checkpoint_path, map_location=get_device()))
+    Agent.rnn.load_state_dict(torch.load(gen_bias_args.agent_checkpoint_path, map_location=get_device()))
     Prior.rnn.eval()
     Agent.rnn.eval()
 

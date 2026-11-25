@@ -1,4 +1,7 @@
 """Collection of helper functions related to generative modeling."""
+import functools
+import os
+
 import numpy as np
 import pandas as pd
 from rdkit import Chem
@@ -6,16 +9,45 @@ from rdkit.Chem import inchi
 import torch
 
 
+@functools.lru_cache(maxsize=None)
+def get_device():
+    """
+    Returns the torch device for the REINVENT models: CUDA if available, otherwise the CPU.
+
+    Set the environment variable GEN_CHEM_1D_DEVICE to cpu, cuda, or mps to force a device,
+    e.g., GEN_CHEM_1D_DEVICE=mps uv run bash run_fully_automated.sh. An unavailable device
+    raises an error. The result is cached, so set the variable before the first call.
+
+    MPS (Apple GPU) is never chosen automatically. Compared with the CPU and CUDA:
+    - Scaffold-constrained sampling is much slower on MPS than on the CPU (546 s vs 90 s)
+      because it currently loops over single molecules.
+    - float64 is not supported, so tensors must be float32 (the reward follows the network dtype).
+    - PyTorch may lack some MPS operators; PYTORCH_ENABLE_MPS_FALLBACK=1 runs those on the CPU.
+    - The PyTorch 2.15 docs list macOS 15.0 or newer.
+    - Results differ slightly from CPU and CUDA, so runs are not reproducible across devices.
+    """
+    name = os.environ.get('GEN_CHEM_1D_DEVICE', 'auto').lower()
+    available = {'cpu': True,
+                 'cuda': torch.cuda.is_available(),
+                 'mps': torch.backends.mps.is_available(),
+                 }
+    if name == 'auto':
+        name = 'cuda' if available['cuda'] else 'cpu'
+    elif name not in available:
+        raise ValueError(f"GEN_CHEM_1D_DEVICE must be auto, cpu, cuda, or mps, got '{name}'")
+    elif not available[name]:
+        raise RuntimeError(f"GEN_CHEM_1D_DEVICE={name} but {name} is not available")
+    return torch.device(name)
+
+
 def Variable(tensor):
     """Wrapper for torch.autograd.Variable that also accepts
        numpy arrays directly and automatically assigns it to
-       the GPU. Be aware in case some operations are better
-       left to the CPU."""
+       the device from get_device(). Be aware in case some
+       operations are better left to the CPU."""
     if isinstance(tensor, np.ndarray):
         tensor = torch.from_numpy(tensor)
-    if torch.cuda.is_available():
-        return torch.autograd.Variable(tensor).cuda()
-    return torch.autograd.Variable(tensor)
+    return torch.autograd.Variable(tensor).to(get_device())
 
 
 def decrease_learning_rate(optimizer, decrease_by=0.01):
@@ -91,9 +123,7 @@ def get_unique_indices(arr):
     arr = arr.cpu().numpy()
     arr_ = np.ascontiguousarray(arr).view(np.dtype((np.void, arr.dtype.itemsize * arr.shape[1])))
     _, idxs = np.unique(arr_, return_index=True)
-    if torch.cuda.is_available():
-        return torch.LongTensor(np.sort(idxs)).cuda()
-    return torch.LongTensor(np.sort(idxs))
+    return torch.LongTensor(np.sort(idxs)).to(get_device())
 
 
 def get_ss_score(smiles, patts):
