@@ -18,6 +18,10 @@ from gen_chem_1D.gen_models.reinvent.utils import (Variable, get_device, get_ss_
 from gen_chem_1D.pred_models.scoring_functions import Scorer
 from gen_chem_1D.utils.parsing import read_yaml_file
 
+# minimum number of valid unique molecules for a step. The score is normalized within the batch
+# and is undefined for 1 molecule, so smaller batches are skipped.
+MIN_BATCH_SIZE = 5
+
 
 def train_agent(gen_bias_args):
     """
@@ -115,6 +119,12 @@ def train_agent(gen_bias_args):
         seqs = seqs[vu_indices]
         agent_likelihood = agent_likelihood[vu_indices]
         entropy = entropy[vu_indices]
+
+        # the scores are normalized within the batch, which is not meaningful for a tiny batch
+        if len(vu_smiles) < MIN_BATCH_SIZE:
+            print(f'Step {step}: skipped because only {len(vu_smiles)} valid unique molecules were generated '
+                  f'(minimum {MIN_BATCH_SIZE})\n\n')
+            continue
 
         # get prior likelihood, score, and fraction of acceptable
         prior_likelihood, _ = Prior.likelihood(Variable(seqs))
