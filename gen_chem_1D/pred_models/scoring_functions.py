@@ -10,9 +10,19 @@ from gen_chem_1D.pred_models.features.create_features import create_features
 from gen_chem_1D.pred_models.rf_model import predict_rf
 
 
+CALC_PROPS = ['mw', 'tpsa', 'logp', 'hbd', 'hba', 'rotb', 'fracsp3', 'coo_counts', 'num_aromatic_rings']
+
+
 class ConvertScore():
     """Class for converting a predicted or calculated value to a score bounded by 0 to 1"""
     def __init__(self, scale_params=[]):
+        if len(scale_params) not in (1, 3, 4):
+            raise ValueError(
+                f'Expected 1, 3, or 4 scale values, but got {len(scale_params)}: {scale_params}. '
+                '1 = [acceptable] (already in 0 to 1); '
+                '3 = [acceptable, worst, best]; '
+                '4 = [acceptable low, acceptable high, min, max].'
+            )
         self.scale_params = scale_params
 
         # already in range 0, 1
@@ -126,10 +136,15 @@ class MultiScore():
         scorers=[]
         names = []
         for sf, params in scoring_functions.items():
-            if sf.lower() in ['mw', 'tpsa', 'logp', 'hbd', 'hba', 'rotb', 'fracsp3', 'coo_counts', 'num_aromatic_rings']:
+            if sf.lower() in CALC_PROPS:
                 scorers.append(CalcProp(name=sf, scale=params))
             elif sf.split('_')[0] == 'rf':
                 scorers.append(RFPredictor(**params))
+            else:
+                raise ValueError(
+                    f"Unsupported scoring function '{sf}'. Supported: {CALC_PROPS} "
+                    "and names starting with 'rf_'."
+                )
             names.append(sf)
 
         self.scorers = scorers
